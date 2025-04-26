@@ -14,6 +14,14 @@ function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
   res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
 }
 
+// Middleware para verificar se o usuário é administrador
+function ensureAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated() && req.user.isAdmin) {
+    return next();
+  }
+  res.status(403).json({ message: "Acesso restrito a administradores." });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticação
   setupAuth(app);
