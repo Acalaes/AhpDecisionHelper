@@ -1,148 +1,202 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogOut } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu, LogOut, User as UserIcon, ChevronDown, BarChart2 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useIsMobile } from "@/hooks/use-mobile";
+import FeedbackButton from "@/components/feedback/FeedbackButton";
 
 export default function Header() {
-  const [location, navigate] = useLocation();
-  const { user, isLoading, logoutMutation } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        navigate("/");
-      }
-    });
+    logoutMutation.mutate();
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isAdmin = user?.isAdmin === true;
+  const userInitials = user?.username ? user.username.slice(0, 2).toUpperCase() : "U";
+
   return (
-    <header className="bg-white shadow-md">
-      <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex items-center mb-2 sm:mb-0">
-          <Link href="/" className="flex items-center cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 mr-2 text-primary"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            </svg>
-            <h1 className="text-2xl font-bold text-primary">Ferramenta de Decisão AHP</h1>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-sm">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Link href="/">
+            <a className="flex items-center space-x-2">
+              <span className="text-xl font-bold">AHP Tool</span>
+            </a>
           </Link>
         </div>
-        <div className="flex items-center">
-          <nav className="mr-4">
-            <ul className="flex space-x-6">
-              <li>
-                <Link 
-                  href="/tool"
-                  className={cn(
-                    "text-neutral-dark hover:text-primary transition cursor-pointer",
-                    location === "/tool" && "text-primary font-medium"
-                  )}
-                >
-                  Ferramenta
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/my-decisions"
-                  className={cn(
-                    "text-neutral-dark hover:text-primary transition cursor-pointer",
-                    location === "/my-decisions" && "text-primary font-medium"
-                  )}
-                >
-                  Minhas Decisões
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/guide"
-                  className={cn(
-                    "text-neutral-dark hover:text-primary transition cursor-pointer",
-                    location === "/guide" && "text-primary font-medium"
-                  )}
-                >
-                  Guia
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/about"
-                  className={cn(
-                    "text-neutral-dark hover:text-primary transition cursor-pointer",
-                    location === "/about" && "text-primary font-medium"
-                  )}
-                >
-                  Sobre AHP
-                </Link>
-              </li>
-              {user?.isAdmin && (
-                <li>
-                  <Link 
-                    href="/dashboard"
-                    className={cn(
-                      "text-neutral-dark hover:text-primary transition cursor-pointer flex items-center",
-                      location === "/dashboard" && "text-primary font-medium"
-                    )}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <line x1="3" y1="9" x2="21" y2="9" />
-                      <line x1="9" y1="21" x2="9" y2="9" />
-                    </svg>
-                    Dashboard
-                  </Link>
-                </li>
-              )}
-            </ul>
-          </nav>
-          
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          ) : user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">{user.username}</span>
-              <Button 
-                onClick={handleLogout} 
-                variant="outline" 
-                size="sm"
-                disabled={logoutMutation.isPending}
-              >
-                {logoutMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                ) : (
-                  <LogOut className="h-4 w-4 mr-1" />
-                )}
-                Sair
-              </Button>
-            </div>
-          ) : (
-            <Link href="/auth" className="inline-block">
-              <Button variant="default" size="sm">
-                Login / Registrar
-              </Button>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          <div className="flex gap-1">
+            <Link href="/">
+              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                Início
+              </a>
             </Link>
-          )}
+            <Link href="/tool">
+              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                Ferramenta
+              </a>
+            </Link>
+            <Link href="/guide">
+              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                Guia
+              </a>
+            </Link>
+            <Link href="/about">
+              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                Sobre
+              </a>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <FeedbackButton />
+            
+            {user ? (
+              <div className="flex items-center gap-2">
+                {user && (
+                  <Link href="/my-decisions">
+                    <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                      Minhas Decisões
+                    </a>
+                  </Link>
+                )}
+                
+                {isAdmin && (
+                  <Link href="/dashboard">
+                    <a className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                      <BarChart2 className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </a>
+                  </Link>
+                )}
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-primary/10 text-primary">{userInitials}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium max-w-[120px] truncate">
+                        {user.username}
+                      </span>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex items-center gap-2">
+                      <UserIcon className="h-4 w-4" />
+                      <span>Perfil</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex items-center gap-2" onClick={handleLogout}>
+                      <LogOut className="h-4 w-4" />
+                      <span>Sair</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" asChild>
+                  <Link href="/auth">Entrar</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/auth">Cadastrar</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* Mobile Navigation Menu Button */}
+        <div className="flex md:hidden items-center gap-2">
+          <FeedbackButton />
+          <Button variant="ghost" size="icon" onClick={toggleMenu}>
+            <Menu className="h-5 w-5" />
+          </Button>
         </div>
-      </div>
-      <div className="bg-slate-100 text-center py-1 text-xs text-gray-600">
-        Powered By Alexandre Calaes
+
+        {/* Mobile Sidebar Menu */}
+        {isMenuOpen && isMobile && (
+          <div className="fixed inset-0 z-50 flex md:hidden">
+            <div className="fixed inset-0 bg-black/50" onClick={toggleMenu}></div>
+            <div className="relative bg-background p-4 w-3/4 min-h-screen ml-auto">
+              <div className="flex flex-col space-y-4 mt-4">
+                <Link href="/">
+                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    Início
+                  </a>
+                </Link>
+                <Link href="/tool">
+                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    Ferramenta
+                  </a>
+                </Link>
+                <Link href="/guide">
+                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    Guia
+                  </a>
+                </Link>
+                <Link href="/about">
+                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    Sobre
+                  </a>
+                </Link>
+                
+                {user ? (
+                  <>
+                    <Link href="/my-decisions">
+                      <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                        Minhas Decisões
+                      </a>
+                    </Link>
+                    
+                    {isAdmin && (
+                      <Link href="/dashboard">
+                        <a className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                          <BarChart2 className="h-4 w-4" />
+                          <span>Dashboard</span>
+                        </a>
+                      </Link>
+                    )}
+                    
+                    <Button variant="ghost" className="justify-start px-3" onClick={handleLogout}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      <span>Sair</span>
+                    </Button>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-2 pt-2">
+                    <Button asChild>
+                      <Link href="/auth">Entrar / Cadastrar</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -1,98 +1,102 @@
-import React from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Star } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { type Feedback } from '@shared/schema';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, XCircle, MoreVertical, Star } from "lucide-react";
+import { Feedback } from "@shared/schema";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface UserFeedbackTableProps {
   feedbacks: Feedback[];
 }
 
 export default function UserFeedbackTable({ feedbacks }: UserFeedbackTableProps) {
-  if (!feedbacks || !feedbacks.length) {
+  // Se não houver feedbacks, exibir mensagem
+  if (!feedbacks || feedbacks.length === 0) {
     return (
-      <div className="text-center p-4">
-        <p className="text-muted-foreground">Nenhum feedback registrado</p>
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Nenhum feedback disponível</p>
       </div>
     );
   }
 
-  // Função para renderizar as estrelas com base na classificação
-  const renderRatingStars = (rating: number) => {
-    return Array(5).fill(0).map((_, i) => (
-      <Star 
-        key={i} 
-        className={`w-4 h-4 ${i < rating ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`}
-      />
-    ));
-  };
-
-  // Função para obter as iniciais do nome de usuário
-  const getUserInitials = (username: string) => {
-    if (!username) return '?';
-    // Extrair iniciais do nome de usuário ou email
-    if (username.includes('@')) {
-      // É um email, pegar a primeira letra da parte antes do @
-      return username.split('@')[0][0].toUpperCase();
-    }
-    // É um nome, pegar a primeira letra
-    return username[0].toUpperCase();
-  };
-
-  // Obter uma cor baseada no nome de usuário para o avatar
-  const getAvatarColor = (username: string) => {
-    const colors = [
-      'bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-yellow-500',
-      'bg-lime-500', 'bg-green-500', 'bg-emerald-500', 'bg-teal-500',
-      'bg-cyan-500', 'bg-sky-500', 'bg-blue-500', 'bg-indigo-500',
-      'bg-violet-500', 'bg-purple-500', 'bg-fuchsia-500', 'bg-pink-500',
-      'bg-rose-500'
-    ];
-    
-    // Gerar um índice baseado na string do username
-    const index = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
-    return colors[index];
-  };
-
   return (
-    <div className="relative overflow-x-auto rounded-md border">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Usuário</TableHead>
-            <TableHead className="w-[120px]">Avaliação</TableHead>
-            <TableHead>Depoimento</TableHead>
-            <TableHead className="w-[180px] text-right">Data</TableHead>
+            <TableHead className="w-[80px]">Nota</TableHead>
+            <TableHead className="min-w-[150px]">Data</TableHead>
+            <TableHead className="min-w-[150px]">Depoimento</TableHead>
+            <TableHead className="w-[100px]">Público</TableHead>
+            <TableHead className="w-[100px] text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {feedbacks.map((feedback) => (
             <TableRow key={feedback.id}>
               <TableCell>
-                <div className="flex items-center space-x-2">
-                  <Avatar className={`h-8 w-8 ${getAvatarColor(feedback.user?.username || '')}`}>
-                    <AvatarFallback>{getUserInitials(feedback.user?.username || '')}</AvatarFallback>
-                  </Avatar>
-                  <span className="truncate max-w-[80px]">{feedback.user?.username.split('@')[0]}</span>
+                <div className="flex items-center">
+                  <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                  <span className="font-medium">{feedback.utilityRating}/10</span>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="flex">
-                  {renderRatingStars(feedback.utilityRating)}
-                </div>
+              <TableCell className="font-medium">
+                {format(new Date(feedback.createdAt), "PPP", { locale: ptBR })}
               </TableCell>
               <TableCell>
                 {feedback.testimonial ? (
-                  <p className="line-clamp-2 text-sm">{feedback.testimonial}</p>
+                  <span className="line-clamp-2 text-sm">
+                    "{feedback.testimonial}"
+                  </span>
                 ) : (
-                  <Badge variant="outline" className="text-xs">Sem depoimento</Badge>
+                  <span className="text-muted-foreground text-sm">Sem depoimento</span>
                 )}
               </TableCell>
-              <TableCell className="text-right text-sm text-muted-foreground">
-                {format(new Date(feedback.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
+              <TableCell>
+                {feedback.allowPublicDisplay ? (
+                  <Badge variant="default" className="flex items-center bg-green-500">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Sim
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="flex items-center">
+                    <XCircle className="h-3 w-3 mr-1" />
+                    Não
+                  </Badge>
+                )}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Abrir menu</span>
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+                    <DropdownMenuItem>Aprovar para exibição</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive">Remover</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}

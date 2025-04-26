@@ -1,94 +1,87 @@
-import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { DECISION_CATEGORIES } from '@shared/schema';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-interface CategoryDistributionProps {
-  data: { category: string; count: number }[];
-  showLegend?: boolean;
+interface CategoryData {
+  name: string;
+  value: number;
 }
 
-// Cores temáticas para as diferentes categorias
-const COLORS = [
-  '#3b82f6', // Azul
-  '#22c55e', // Verde
-  '#f59e0b', // Âmbar
-  '#ef4444', // Vermelho
-  '#8b5cf6', // Violeta
-  '#ec4899', // Rosa
-  '#06b6d4', // Ciano
-  '#f97316', // Laranja
-  '#a3e635', // Lima
-  '#64748b', // Cinza
-];
+interface CategoryDistributionProps {
+  data: CategoryData[];
+}
 
-export default function CategoryDistribution({ data, showLegend = false }: CategoryDistributionProps) {
-  // Formatar dados para o gráfico e mapear as categorias para nomes legíveis
-  const chartData = data.map(item => ({
-    name: DECISION_CATEGORIES[item.category as keyof typeof DECISION_CATEGORIES] || item.category,
-    value: item.count
-  }));
+// Cores para as categorias no gráfico de pizza
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-  // Calcular a porcentagem para renderização do rótulo
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
+export default function CategoryDistribution({ data }: CategoryDistributionProps) {
+  // Se não houver dados, exibir mensagem
+  if (!data || data.length === 0) {
     return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
-        dominantBaseline="central"
-        fontSize={12}
-        fontWeight={600}
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
-
-  // Renderizar mensagem se não houver dados
-  if (!data.length) {
-    return (
-      <div className="h-full flex items-center justify-center">
+      <div className="flex justify-center items-center h-[300px]">
         <p className="text-muted-foreground">Nenhum dado disponível</p>
       </div>
     );
   }
 
+  // Calcular o total para percentuais
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  // Componente personalizado para o rótulo interno do gráfico de pizza
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }: any) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+
+    return percent > 0.05 ? (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor="middle" 
+        dominantBaseline="central"
+        style={{ fontSize: '12px', fontWeight: 'bold' }}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    ) : null;
+  };
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const item = payload[0].payload;
+      return (
+        <div className="bg-white p-3 shadow-md rounded-md border">
+          <p className="font-medium">{item.name}</p>
+          <p className="text-sm">
+            <span className="font-medium">{item.value}</span> decisões ({(item.value / total * 100).toFixed(1)}%)
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={chartData}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={renderCustomizedLabel}
-          outerRadius={showLegend ? "70%" : "90%"}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {chartData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        {showLegend && (
-          <Legend 
-            layout="vertical" 
-            verticalAlign="middle" 
-            align="right"
-            wrapperStyle={{ fontSize: "12px" }}
-          />
-        )}
-        <Tooltip 
-          formatter={(value) => [`${value} decisões`, 'Quantidade']}
-          labelFormatter={(label) => `Categoria: ${label}`}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div style={{ width: '100%', height: 300 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            outerRadius={100}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

@@ -1,85 +1,78 @@
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, MessageSquare } from "lucide-react";
+import { Feedback } from "@shared/schema";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star, Quote, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Feedback } from "@shared/schema";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PublicFeedbackList() {
-  const { data: feedbacks, isLoading, error } = useQuery<Feedback[]>({
+  const { data: feedbacks, isLoading } = useQuery<Feedback[]>({
     queryKey: ['/api/feedback/public'],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-center mb-6">Depoimentos dos Usuários</h3>
-        {Array(3).fill(0).map((_, index) => (
-          <Card key={index} className="shadow-sm">
-            <CardHeader className="pb-2">
-              <Skeleton className="h-4 w-1/3" />
-              <Skeleton className="h-3 w-1/4" />
-            </CardHeader>
-            <CardContent className="pb-2">
-              <Skeleton className="h-16 w-full" />
-            </CardContent>
-            <CardFooter>
-              <Skeleton className="h-4 w-1/4" />
-            </CardFooter>
-          </Card>
-        ))}
+      <div className="flex flex-col items-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Carregando depoimentos...</p>
       </div>
     );
   }
 
-  if (error) {
+  if (!feedbacks || feedbacks.length === 0 || !feedbacks.some(f => f.allowPublicDisplay && f.testimonial)) {
     return (
-      <div className="text-center text-muted-foreground">
-        <p>Não foi possível carregar os depoimentos.</p>
+      <div className="text-center py-8">
+        <h2 className="text-2xl font-bold mb-4">Depoimentos</h2>
+        <p className="text-muted-foreground max-w-md mx-auto">
+          Nenhum depoimento público disponível ainda. Seja o primeiro a compartilhar sua experiência!
+        </p>
       </div>
     );
   }
 
-  // Se não houver feedbacks públicos, mostre uma mensagem
-  if (!feedbacks || feedbacks.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground py-8">
-        <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-20" />
-        <p>Nenhum depoimento disponível no momento.</p>
-      </div>
-    );
-  }
+  // Filtrar apenas feedbacks públicos com depoimentos
+  const publicFeedbacks = feedbacks
+    .filter(f => f.allowPublicDisplay && f.testimonial)
+    .sort((a, b) => b.utilityRating - a.utilityRating)
+    .slice(0, 3); // Limitar a 3 depoimentos
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-center mb-6">Depoimentos dos Usuários</h3>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {feedbacks.map((feedback) => (
-          <Card key={feedback.id} className="shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg flex items-center">
-                  <Star className="h-5 w-5 text-yellow-500 mr-1" />
-                  {feedback.utilityRating}/10
-                </CardTitle>
-                <CardDescription>
-                  {feedback.decisionName || "Ferramenta AHP"}
-                </CardDescription>
+    <div className="py-4">
+      <h2 className="text-2xl font-bold text-center mb-6">O Que Dizem Nossos Usuários</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {publicFeedbacks.map((feedback) => (
+          <Card key={feedback.id} className="bg-white">
+            <CardContent className="pt-6">
+              <div className="mb-4 flex items-center">
+                <div className="flex text-yellow-500 mb-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className="h-4 w-4 mr-0.5" 
+                      fill={i < Math.round(feedback.utilityRating / 2) ? "currentColor" : "none"} 
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-sm font-medium">{feedback.utilityRating}/10</span>
               </div>
-            </CardHeader>
-            <CardContent className="pb-2">
-              {feedback.testimonial ? (
-                <p className="text-sm italic">"{feedback.testimonial}"</p>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">Usuário não deixou um depoimento escrito</p>
-              )}
+              
+              <div className="relative">
+                <Quote className="h-8 w-8 text-primary/20 absolute -top-1 -left-2" />
+                <p className="text-neutral-gray relative pl-6 italic">
+                  "{feedback.testimonial}"
+                </p>
+              </div>
+              
+              <div className="mt-4 text-sm text-muted-foreground flex justify-between items-center">
+                <span>
+                  {format(new Date(feedback.createdAt), "PPP", { locale: ptBR })}
+                </span>
+                <span className="font-medium">{feedback.decisionName || 'Decisão AHP'}</span>
+              </div>
             </CardContent>
-            <CardFooter className="text-xs text-muted-foreground">
-              {feedback.createdAt && format(new Date(feedback.createdAt), "PPP", { locale: ptBR })}
-            </CardFooter>
           </Card>
         ))}
       </div>
