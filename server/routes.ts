@@ -157,35 +157,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // === Rotas de Feedback ===
   app.post("/api/feedback", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
-      // Verificar se o usuário está autenticado
+      // Verificar se o usuário está autenticado (garantia dupla)
       if (!req.user || !req.user.id) {
         return res.status(401).json({
           message: "Usuário não autenticado. Faça login para enviar feedback."
         });
       }
       
-      let feedbackData = req.body as InsertFeedback;
+      // Obter dados do corpo da requisição
+      const { utilityRating, testimonial, allowPublicDisplay, feedbackType, decisionId } = req.body;
       
       // Validação manual adicional para maior segurança
-      if (!feedbackData.utilityRating || feedbackData.utilityRating < 1 || feedbackData.utilityRating > 10) {
+      if (!utilityRating || utilityRating < 1 || utilityRating > 10) {
         return res.status(400).json({
           message: "A avaliação deve estar entre 1 e 10"
         });
       }
       
-      // Preparar os dados com valores padrão corretos
-      feedbackData = {
-        ...feedbackData,
-        // Garantir que feedbackType exista e seja válido
-        feedbackType: feedbackData.feedbackType || (feedbackData.decisionId ? "decision" : "general"),
-        // Garantir que allowPublicDisplay seja booleano
-        allowPublicDisplay: !!feedbackData.allowPublicDisplay,
-        // Se o testimonial estiver vazio, use undefined em vez de string vazia
-        testimonial: feedbackData.testimonial?.trim() || undefined
+      // Preparar objeto de feedback completo - apenas campos válidos do schema
+      const feedbackData: InsertFeedback = {
+        userId: req.user.id, // IMPORTANTE: Garantir que o userId esteja presente
+        utilityRating,
+        testimonial: testimonial?.trim() || undefined,
+        allowPublicDisplay: !!allowPublicDisplay,
+        feedbackType: feedbackType || (decisionId ? "decision" : "general"),
+        decisionId: decisionId || undefined
       };
       
+      // Log dos dados para depuração
+      console.log("Dados de feedback preparados:", feedbackData);
+      
       try {
-        // Validação usando Zod
+        // Validação usando Zod - Primeiro passo
         insertFeedbackSchema.parse(feedbackData);
       } catch (error) {
         if (error instanceof ZodError) {
@@ -199,17 +202,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw error;
       }
       
-      console.log("Dados de feedback validados:", {
-        ...feedbackData,
-        userId: req.user.id
-      });
+      // Salvar o feedback no banco de dados
+      const feedback = await storage.createFeedback(feedbackData);
       
-      // Associar o feedback ao usuário logado
-      const feedback = await storage.createFeedback({
-        ...feedbackData,
-        userId: req.user.id
-      });
-      
+      // Retornar sucesso
       res.status(201).json(feedback);
     } catch (error) {
       console.error("Erro ao salvar feedback:", error);

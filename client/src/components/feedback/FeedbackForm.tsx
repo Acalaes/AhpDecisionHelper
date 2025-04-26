@@ -33,40 +33,50 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
         throw new Error("A avaliação deve estar entre 1 e 10");
       }
       
+      // Estrutura de dados correta, seguindo exatamente o tipo InsertFeedback definido no schema
       const feedbackData = {
         utilityRating: rating,
-        testimonial: testimonial.trim() || undefined, // Usar undefined para que seja omitido em vez de null
-        allowPublicDisplay: !!allowPublicDisplay, // Garantir que seja booleano
-        feedbackType: decisionId ? "decision" : "general"
+        testimonial: testimonial.trim() || undefined,
+        allowPublicDisplay: !!allowPublicDisplay,
+        feedbackType: decisionId ? "decision" : "general",
+        ...(decisionId ? { decisionId } : {})
       };
-      
-      // Adiciona o ID da decisão somente se ele existir
-      if (decisionId) {
-        // @ts-ignore - Adicionamos dinamicamente a propriedade
-        feedbackData.decisionId = decisionId;
-      }
       
       console.log("Enviando feedback:", feedbackData);
       
-      const response = await apiRequest("POST", "/api/feedback", feedbackData);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("Resposta de erro:", response.status, errorData);
-        throw new Error(errorData.message || `Erro ${response.status} ao enviar feedback`);
+      try {
+        // Enviar requisição para o servidor
+        const response = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(feedbackData),
+          credentials: "include"
+        });
+        
+        // Verificar se o servidor retornou um erro
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Resposta de erro:", response.status, errorData);
+          throw new Error(errorData.message || errorData.error || `Erro ${response.status} ao enviar feedback`);
+        }
+        
+        const data = await response.json();
+        console.log("Resposta do servidor:", data);
+        
+        // Invalidar consultas relevantes para atualizar os dados
+        await queryClient.invalidateQueries({ queryKey: ['/api/feedback'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/feedback/public'] });
+        
+        toast({
+          title: "Feedback enviado",
+          description: "Obrigado por compartilhar sua experiência conosco.",
+        });
+        
+        // Fechar o modal
+        onComplete();
+      } catch (error) {
+        throw error;
       }
-      
-      // Invalidar consultas relevantes para atualizar os dados
-      await queryClient.invalidateQueries({ queryKey: ['/api/feedback'] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/feedback/public'] });
-      
-      toast({
-        title: "Feedback enviado",
-        description: "Obrigado por compartilhar sua experiência conosco.",
-      });
-      
-      // Fechar o modal
-      onComplete();
     } catch (error) {
       console.error("Erro ao enviar feedback:", error);
       
