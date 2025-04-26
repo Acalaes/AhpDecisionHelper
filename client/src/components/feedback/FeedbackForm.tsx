@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 interface FeedbackFormProps {
-  decisionId: number;
+  decisionId?: number;
   decisionName: string;
   onComplete: () => void;
 }
@@ -28,15 +28,23 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
     try {
       setIsSubmitting(true);
       
-      await apiRequest("POST", "/api/feedback", {
-        decisionId,
+      const feedbackData: any = {
         utilityRating: rating,
         testimonial: testimonial.trim() || null,
         allowPublicDisplay,
-      });
+        feedbackType: decisionId ? "decision" : "general"
+      };
+      
+      // Adiciona o ID da decisão somente se ele existir
+      if (decisionId) {
+        feedbackData.decisionId = decisionId;
+      }
+      
+      await apiRequest("POST", "/api/feedback", feedbackData);
       
       // Invalidar consultas relevantes para atualizar os dados
       await queryClient.invalidateQueries({ queryKey: ['/api/feedback'] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/feedback/public'] });
       
       toast({
         title: "Feedback enviado",
@@ -46,6 +54,7 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
       // Fechar o modal
       onComplete();
     } catch (error) {
+      console.error("Erro ao enviar feedback:", error);
       toast({
         title: "Erro ao enviar feedback",
         description: "Não foi possível enviar seu feedback. Tente novamente mais tarde.",

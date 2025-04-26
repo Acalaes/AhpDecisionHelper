@@ -157,9 +157,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // === Rotas de Feedback ===
   app.post("/api/feedback", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
-      const feedbackData = req.body as InsertFeedback;
+      let feedbackData = req.body as InsertFeedback;
       
+      // Valide os dados recebidos (pode incluir ou não decisionId)
       try {
+        feedbackData = {
+          ...feedbackData,
+          // Garantindo que feedbackType exista
+          feedbackType: feedbackData.feedbackType || (feedbackData.decisionId ? "decision" : "general")
+        };
+        
         insertFeedbackSchema.parse(feedbackData);
       } catch (error) {
         if (error instanceof ZodError) {
@@ -180,6 +187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(feedback);
     } catch (error) {
+      console.error("Erro ao salvar feedback:", error);
       res.status(500).json({ message: "Erro ao salvar feedback" });
     }
   });

@@ -70,7 +70,9 @@ export default function PublicFeedbackList() {
                 <span>
                   {format(new Date(feedback.createdAt), "PPP", { locale: ptBR })}
                 </span>
-                <span className="font-medium">{feedback.decisionName || 'Decisão AHP'}</span>
+                <span className="font-medium">
+                  {feedback.feedbackType === 'general' ? 'Feedback Geral' : 'Decisão AHP'}
+                </span>
               </div>
             </CardContent>
           </Card>
