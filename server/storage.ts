@@ -1,6 +1,13 @@
-import { users, type User, type InsertUser, decisions, type Decision, type InsertDecision, type AHPDecision } from "@shared/schema";
+import { 
+  users, type User, type InsertUser, 
+  decisions, type Decision, type InsertDecision, type AHPDecision,
+  feedbacks, type Feedback, type InsertFeedback,
+  userEngagements, type UserEngagement, type InsertUserEngagement,
+  aggregateMetrics, type AggregateMetric, type DecisionCategory,
+  DECISION_CATEGORIES, type categoryType
+} from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql, desc, avg, count, sum } from "drizzle-orm";
 import session, { Store } from "express-session";
 import ConnectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
