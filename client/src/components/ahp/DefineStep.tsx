@@ -97,17 +97,17 @@ export default function DefineStep({
   const handleNext = () => {
     // Validate before proceeding
     if (!problemName.trim()) {
-      setValidationMessage("Please enter a decision problem name");
+      setValidationMessage("Por favor, digite um nome para o problema de decisão");
       return;
     }
 
     if (criteria.length < 2) {
-      setValidationMessage("You need at least 2 criteria");
+      setValidationMessage("Você precisa de pelo menos 2 critérios");
       return;
     }
 
     if (alternatives.length < 2) {
-      setValidationMessage("You need at least 2 alternatives");
+      setValidationMessage("Você precisa de pelo menos 2 alternativas");
       return;
     }
 
@@ -116,7 +116,7 @@ export default function DefineStep({
     const emptyAlternatives = alternatives.filter(a => !a.name.trim());
 
     if (emptyCriteria.length > 0 || emptyAlternatives.length > 0) {
-      setValidationMessage("All criteria and alternatives must have names");
+      setValidationMessage("Todos os critérios e alternativas devem ter nomes");
       return;
     }
 
@@ -127,11 +127,11 @@ export default function DefineStep({
     <div>
       <div className="mb-6">
         <label htmlFor="problem-name" className="block text-sm font-medium text-neutral-dark mb-1">
-          Decision Problem
+          Problema de Decisão
         </label>
         <Input
           id="problem-name"
-          placeholder="e.g., Selecting a Laptop"
+          placeholder="ex., Escolhendo um Notebook"
           value={problemName}
           onChange={(e) => onProblemNameChange(e.target.value)}
           className="w-full"
@@ -141,14 +141,14 @@ export default function DefineStep({
       {/* Criteria Editor */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-neutral-dark">Decision Criteria</label>
+          <label className="block text-sm font-medium text-neutral-dark">Critérios de Decisão</label>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={addCriterion}
             className="text-primary hover:text-primary-dark text-sm flex items-center"
           >
-            <PlusCircle className="h-4 w-4 mr-1" /> Add Criterion
+            <PlusCircle className="h-4 w-4 mr-1" /> Adicionar Critério
           </Button>
         </div>
 
@@ -156,7 +156,7 @@ export default function DefineStep({
           {criteria.map((criterion) => (
             <div key={criterion.id} className="flex items-center">
               <Input
-                placeholder="Criterion name"
+                placeholder="Nome do critério"
                 value={criterion.name}
                 onChange={(e) => updateCriterion(criterion.id, e.target.value)}
                 className={nameErrors[criterion.id] ? "border-destructive" : ""}
@@ -177,14 +177,14 @@ export default function DefineStep({
       {/* Alternatives Editor */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-neutral-dark">Decision Alternatives</label>
+          <label className="block text-sm font-medium text-neutral-dark">Alternativas de Decisão</label>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={addAlternative}
             className="text-primary hover:text-primary-dark text-sm flex items-center"
           >
-            <PlusCircle className="h-4 w-4 mr-1" /> Add Alternative
+            <PlusCircle className="h-4 w-4 mr-1" /> Adicionar Alternativa
           </Button>
         </div>
 
@@ -192,7 +192,7 @@ export default function DefineStep({
           {alternatives.map((alternative) => (
             <div key={alternative.id} className="flex items-center">
               <Input
-                placeholder="Alternative name"
+                placeholder="Nome da alternativa"
                 value={alternative.name}
                 onChange={(e) => updateAlternative(alternative.id, e.target.value)}
                 className={nameErrors[alternative.id] ? "border-destructive" : ""}
@@ -218,8 +218,12 @@ export default function DefineStep({
 
       <div className="flex justify-end">
         <Button onClick={handleNext} className="flex items-center">
-          Next <ArrowRight className="ml-1 h-4 w-4" />
+          Próximo <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
+      </div>
+      
+      <div className="text-center mt-8 text-sm text-gray-500">
+        Powered By Alexandre Calaes
       </div>
     </div>
   );

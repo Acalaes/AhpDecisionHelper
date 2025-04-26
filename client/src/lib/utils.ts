@@ -84,10 +84,10 @@ export function formatAHPValue(value: number): string {
 
 export function getComparisonDescription(value: number, item1: string, item2: string): string {
   if (value === 1) {
-    return `Both are equally important`;
+    return `Ambos são igualmente importantes`;
   } else if (value > 1) {
-    return `${item1} is ${formatAHPValue(value)}x more important than ${item2}`;
+    return `${item1} é ${formatAHPValue(value)}x mais importante que ${item2}`;
   } else {
-    return `${item2} is ${formatAHPValue(1/value)}x more important than ${item1}`;
+    return `${item2} é ${formatAHPValue(1/value)}x mais importante que ${item1}`;
   }
 }

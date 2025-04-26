@@ -86,7 +86,7 @@ export default function ResultsStep({
       labels: rankedAlternatives.map((a) => a.name),
       datasets: [
         {
-          label: "Overall Score",
+          label: "Pontuação Geral",
           data: rankedAlternatives.map((a) => a.score),
           backgroundColor: [
             "hsl(var(--success))",
@@ -120,8 +120,8 @@ export default function ResultsStep({
     // In a real application, this would save to the backend
     // For now, we'll just show a toast
     toast({
-      title: "Results Saved",
-      description: "Your decision results have been saved successfully.",
+      title: "Resultados Salvos",
+      description: "Os resultados da sua decisão foram salvos com sucesso.",
     });
   };
 
@@ -132,16 +132,16 @@ export default function ResultsStep({
   return (
     <div>
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-neutral-dark mb-3">Decision Results</h3>
+        <h3 className="text-lg font-medium text-neutral-dark mb-3">Resultados da Decisão</h3>
         <p className="mb-6 text-neutral-dark">
-          Based on your preferences, here are the calculated weights and final rankings.
+          Com base nas suas preferências, aqui estão os pesos calculados e as classificações finais.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Criteria Weights */}
           <Card>
             <CardContent className="pt-6">
-              <h4 className="font-medium mb-3">Criteria Weights</h4>
+              <h4 className="font-medium mb-3">Pesos dos Critérios</h4>
               <div className="h-64 mb-4">
                 <Chart {...criteriaChartData} />
               </div>
@@ -166,7 +166,7 @@ export default function ResultsStep({
           {/* Final Ranking */}
           <Card>
             <CardContent className="pt-6">
-              <h4 className="font-medium mb-3">Final Ranking</h4>
+              <h4 className="font-medium mb-3">Classificação Final</h4>
               <div className="h-64 mb-4">
                 <Chart {...alternativesChartData} />
               </div>
@@ -191,7 +191,7 @@ export default function ResultsStep({
                     <div className="flex-1">
                       <div className="font-medium">{alt.name}</div>
                       <div className="text-sm text-neutral-gray">
-                        Overall score: {formatNumber(alt.score)}
+                        Pontuação geral: {formatNumber(alt.score)}
                       </div>
                     </div>
                   </div>
@@ -203,18 +203,18 @@ export default function ResultsStep({
 
         {/* Detailed Matrix */}
         <div className="mt-6">
-          <h4 className="font-medium mb-3">Alternative Priorities by Criterion</h4>
+          <h4 className="font-medium mb-3">Prioridades das Alternativas por Critério</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left text-neutral-dark">
               <thead className="text-xs uppercase bg-neutral-light">
                 <tr>
-                  <th scope="col" className="px-6 py-3">Alternative</th>
+                  <th scope="col" className="px-6 py-3">Alternativa</th>
                   {decision.criteria.map((criterion, index) => (
                     <th key={criterion.id} scope="col" className="px-6 py-3">
                       {criterion.name} ({formatNumber(decision.criteriaComparisons.priorities[index] * 100)}%)
                     </th>
                   ))}
-                  <th scope="col" className="px-6 py-3">Overall</th>
+                  <th scope="col" className="px-6 py-3">Geral</th>
                 </tr>
               </thead>
               <tbody>
@@ -251,21 +251,25 @@ export default function ResultsStep({
         {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
           <Button onClick={handleSaveResults} className="flex items-center">
-            <Save className="mr-2 h-4 w-4" /> Save Results
+            <Save className="mr-2 h-4 w-4" /> Salvar Resultados
           </Button>
           <Button variant="secondary" onClick={handlePrintReport} className="flex items-center">
-            <Printer className="mr-2 h-4 w-4" /> Print Report
+            <Printer className="mr-2 h-4 w-4" /> Imprimir Relatório
           </Button>
           <Button variant="outline" onClick={onNewDecision} className="flex items-center">
-            <RotateCcw className="mr-2 h-4 w-4" /> Start New Decision
+            <RotateCcw className="mr-2 h-4 w-4" /> Iniciar Nova Decisão
           </Button>
         </div>
       </div>
 
       <div className="flex justify-start">
         <Button variant="outline" onClick={onBack} className="flex items-center">
-          <ArrowLeft className="mr-1 h-4 w-4" /> Previous
+          <ArrowLeft className="mr-1 h-4 w-4" /> Anterior
         </Button>
+      </div>
+      
+      <div className="text-center mt-8 text-sm text-gray-500">
+        Powered By Alexandre Calaes
       </div>
     </div>
   );

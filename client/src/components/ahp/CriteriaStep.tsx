@@ -82,14 +82,14 @@ export default function CriteriaStep({
   return (
     <div>
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-neutral-dark mb-3">Criteria Pairwise Comparison</h3>
+        <h3 className="text-lg font-medium text-neutral-dark mb-3">Comparação Par a Par de Critérios</h3>
         <p className="mb-4 text-neutral-dark">
-          Compare the relative importance of each criterion against others.
+          Compare a importância relativa de cada critério em relação aos outros.
         </p>
 
         {/* Comparison Scale Legend */}
         <div className="bg-neutral-light p-4 rounded-lg mb-6">
-          <h4 className="font-medium mb-2">AHP Scale:</h4>
+          <h4 className="font-medium mb-2">Escala AHP:</h4>
           <div className="grid grid-cols-9 gap-1 text-center text-sm mb-2">
             <div className="bg-destructive bg-opacity-20 p-1 rounded">9</div>
             <div className="bg-destructive bg-opacity-10 p-1 rounded">7</div>
@@ -102,9 +102,9 @@ export default function CriteriaStep({
             <div className="bg-info bg-opacity-20 p-1 rounded">9</div>
           </div>
           <div className="grid grid-cols-3 text-center text-sm">
-            <div className="text-left">Left is more important</div>
-            <div className="text-center">Equal</div>
-            <div className="text-right">Right is more important</div>
+            <div className="text-left">Esquerda é mais importante</div>
+            <div className="text-center">Igual</div>
+            <div className="text-right">Direita é mais importante</div>
           </div>
         </div>
 
@@ -130,15 +130,19 @@ export default function CriteriaStep({
 
       <div className="flex justify-between">
         <Button variant="outline" onClick={onBack} className="flex items-center">
-          <ArrowLeft className="mr-1 h-4 w-4" /> Previous
+          <ArrowLeft className="mr-1 h-4 w-4" /> Anterior
         </Button>
         <Button
           onClick={onNext}
           disabled={!canContinue}
           className="flex items-center"
         >
-          Next <ArrowRight className="ml-1 h-4 w-4" />
+          Próximo <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
+      </div>
+      
+      <div className="text-center mt-8 text-sm text-gray-500">
+        Powered By Alexandre Calaes
       </div>
     </div>
   );

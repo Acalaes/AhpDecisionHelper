@@ -56,7 +56,7 @@ export default function ComparisonSlider({
       
       <div className="flex items-center">
         <div className="w-1/4 text-right pr-3 text-sm">
-          {leftItem} is better
+          {leftItem} é melhor
         </div>
         <div className="w-1/2">
           <Slider
@@ -69,7 +69,7 @@ export default function ComparisonSlider({
           />
         </div>
         <div className="w-1/4 pl-3 text-sm">
-          {rightItem} is better
+          {rightItem} é melhor
         </div>
       </div>
       

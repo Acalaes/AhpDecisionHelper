@@ -130,9 +130,9 @@ export default function AlternativesStep({
   return (
     <div>
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-neutral-dark mb-3">Alternatives Comparison</h3>
+        <h3 className="text-lg font-medium text-neutral-dark mb-3">Comparação de Alternativas</h3>
         <p className="mb-4 text-neutral-dark">
-          Compare alternatives with respect to each criterion.
+          Compare as alternativas em relação a cada critério.
         </p>
 
         {/* Criterion Tabs */}
@@ -149,7 +149,7 @@ export default function AlternativesStep({
             <TabsContent key={criterion.id} value={criterion.id}>
               <div className="space-y-6">
                 <h4 className="font-medium">
-                  With respect to <span className="text-primary">{criterion.name}</span>:
+                  Com relação a <span className="text-primary">{criterion.name}</span>:
                 </h4>
 
                 {/* Alternative Pairwise Comparisons */}
@@ -183,15 +183,19 @@ export default function AlternativesStep({
 
       <div className="flex justify-between">
         <Button variant="outline" onClick={onBack} className="flex items-center">
-          <ArrowLeft className="mr-1 h-4 w-4" /> Previous
+          <ArrowLeft className="mr-1 h-4 w-4" /> Anterior
         </Button>
         <Button
           onClick={onNext}
           disabled={!canContinue}
           className="flex items-center"
         >
-          Calculate Results <ArrowRight className="ml-1 h-4 w-4" />
+          Calcular Resultados <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
+      </div>
+      
+      <div className="text-center mt-8 text-sm text-gray-500">
+        Powered By Alexandre Calaes
       </div>
     </div>
   );
