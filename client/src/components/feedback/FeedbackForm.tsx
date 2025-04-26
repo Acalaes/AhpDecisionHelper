@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { insertFeedbackSchema } from '@shared/schema';
-import { apiRequest } from '@/lib/queryClient';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Star } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { insertFeedbackSchema } from "@shared/schema";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-// Estendendo o schema para validação no formulário
 const feedbackFormSchema = insertFeedbackSchema.extend({
-  decisionName: z.string(),
+  testimonial: z.string().optional(),
+  allowPublicDisplay: z.boolean().optional()
 });
 
 type FeedbackFormData = z.infer<typeof feedbackFormSchema>;
@@ -27,115 +28,115 @@ interface FeedbackFormProps {
 
 export default function FeedbackForm({ decisionId, decisionName, onComplete }: FeedbackFormProps) {
   const { toast } = useToast();
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  
   const form = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackFormSchema),
     defaultValues: {
       decisionId,
-      decisionName,
-      utilityRating: 0,
+      utilityRating: 5,
       testimonial: '',
-      allowPublicDisplay: false,
-    },
+      allowPublicDisplay: true
+    }
   });
 
-  const onSubmit = async (data: FeedbackFormData) => {
-    if (rating === 0) {
+  const submitMutation = useMutation({
+    mutationFn: async (data: FeedbackFormData) => {
+      const response = await apiRequest('POST', '/api/feedback', data);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/feedback'] });
+      setIsSubmitted(true);
       toast({
-        title: "Avaliação obrigatória",
-        description: "Por favor, selecione uma avaliação de 1 a 5 estrelas.",
-        variant: "destructive",
+        title: "Feedback enviado com sucesso!",
+        description: "Obrigado por compartilhar sua experiência.",
       });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      // Atualizar valor da avaliação no objeto de dados
-      data.utilityRating = rating;
-      
-      // Remover campo não necessário na API
-      const { decisionName, ...feedbackData } = data;
-
-      await apiRequest('POST', '/api/feedback', feedbackData);
-      
-      toast({
-        title: "Feedback enviado",
-        description: "Obrigado por compartilhar sua experiência!",
-      });
-      
       if (onComplete) {
         onComplete();
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       toast({
         title: "Erro ao enviar feedback",
-        description: "Ocorreu um erro ao processar seu feedback. Tente novamente.",
+        description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
+  });
+
+  const onSubmit = async (data: FeedbackFormData) => {
+    await submitMutation.mutate(data);
   };
 
-  // Componente de estrela para avaliação
-  const RatingStar = ({ index }: { index: number }) => {
-    const isFilled = (hoverRating || rating) >= index;
-
+  // Se o usuário já tiver enviado o feedback, mostrar mensagem de agradecimento
+  if (isSubmitted) {
     return (
-      <Star
-        className={`h-8 w-8 cursor-pointer transition-colors ${
-          isFilled ? 'text-amber-500 fill-amber-500' : 'text-muted-foreground'
-        }`}
-        onMouseEnter={() => setHoverRating(index)}
-        onMouseLeave={() => setHoverRating(0)}
-        onClick={() => setRating(index)}
-      />
+      <div className="space-y-4 py-4 text-center">
+        <h3 className="text-xl font-medium">Feedback Enviado!</h3>
+        <p className="text-muted-foreground">
+          Obrigado por compartilhar sua experiência. Sua opinião é muito importante 
+          para continuar melhorando a ferramenta.
+        </p>
+      </div>
     );
-  };
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-4">
-          <FormLabel>Decisão avaliada</FormLabel>
-          <div className="p-3 bg-secondary/50 rounded-md">
-            <p className="font-medium">{decisionName}</p>
-          </div>
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium">Avaliando: {decisionName}</h3>
+          <p className="text-sm text-muted-foreground">
+            Por favor, avalie sua experiência com a ferramenta AHP.
+          </p>
         </div>
 
-        <div className="space-y-4">
-          <FormLabel>Como você avalia a utilidade desta ferramenta?</FormLabel>
-          <div className="flex gap-1 items-center">
-            {[1, 2, 3, 4, 5].map((index) => (
-              <RatingStar key={index} index={index} />
-            ))}
-            <span className="ml-3 text-sm text-muted-foreground">
-              {rating > 0 ? `${rating} de 5 estrelas` : 'Clique para avaliar'}
-            </span>
-          </div>
-        </div>
+        <FormField
+          control={form.control}
+          name="utilityRating"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quão útil foi esta ferramenta? (1-10)</FormLabel>
+              <FormControl>
+                <div className="flex flex-col space-y-2">
+                  <Input 
+                    type="range" 
+                    min="1" 
+                    max="10" 
+                    step="1"
+                    {...field}
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>1 - Nada útil</span>
+                    <span>{field.value}</span>
+                    <span>10 - Extremamente útil</span>
+                  </div>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
           name="testimonial"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Compartilhe sua experiência (opcional)</FormLabel>
+              <FormLabel>Depoimento (opcional)</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Conte-nos como o AHP Decision Helper ajudou no seu processo de tomada de decisão..."
+                <Textarea 
+                  placeholder="Compartilhe sua experiência com a ferramenta AHP..."
                   className="resize-none"
                   rows={4}
                   {...field}
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormDescription>
-                Seu depoimento pode inspirar outros usuários a aplicarem esta metodologia.
+                Seu feedback nos ajuda a melhorar a ferramenta.
               </FormDescription>
             </FormItem>
           )}
@@ -148,22 +149,35 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
             <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
                 <Checkbox
-                  checked={field.value}
+                  checked={field.value ?? false}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Permitir exibição pública</FormLabel>
+                <FormLabel>
+                  Permito que meu depoimento seja exibido publicamente
+                </FormLabel>
                 <FormDescription>
-                  Autorizo o uso do meu depoimento e avaliação no Dashboard de Impacto Social
+                  Seu nome não será exibido, apenas seu depoimento.
                 </FormDescription>
               </div>
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? 'Enviando...' : 'Enviar Feedback'}
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={submitMutation.isPending}
+        >
+          {submitMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Enviando...
+            </>
+          ) : (
+            'Enviar Feedback'
+          )}
         </Button>
       </form>
     </Form>

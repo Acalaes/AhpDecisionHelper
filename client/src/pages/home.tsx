@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import PublicFeedbackList from "@/components/feedback/PublicFeedbackList";
 
 export default function Home() {
   return (
@@ -138,6 +139,11 @@ export default function Home() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="bg-white p-8 rounded-lg shadow-md mb-16">
+        <PublicFeedbackList />
       </div>
 
       {/* CTA Section */}

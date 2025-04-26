@@ -34,6 +34,7 @@ function Router() {
         </Switch>
       </main>
       <Footer />
+      <FeedbackButton />
     </>
   );
 }
