@@ -47,7 +47,7 @@ export class DatabaseStorage implements IStorage {
       criteriaComparisons: JSON.parse(decision.criteriaComparisonsJson || '{}'),
       alternativeComparisons: JSON.parse(decision.alternativeComparisonsJson || '{}'),
       overallRanking: decision.overallRankingJson ? JSON.parse(decision.overallRankingJson) : undefined,
-      createdAt: decision.createdAt.toISOString()
+      createdAt: typeof decision.createdAt === 'string' ? decision.createdAt : decision.createdAt.toString()
     };
   }
 
@@ -66,20 +66,20 @@ export class DatabaseStorage implements IStorage {
       criteriaComparisons: JSON.parse(decision.criteriaComparisonsJson || '{}'),
       alternativeComparisons: JSON.parse(decision.alternativeComparisonsJson || '{}'),
       overallRanking: decision.overallRankingJson ? JSON.parse(decision.overallRankingJson) : undefined,
-      createdAt: decision.createdAt.toISOString()
+      createdAt: typeof decision.createdAt === 'string' ? decision.createdAt : decision.createdAt.toString()
     }));
   }
 
   async createDecision(decision: AHPDecision): Promise<AHPDecision> {
     // Prepare the decision data for database storage
-    const insertData: InsertDecision = {
+    const insertData = {
       name: decision.name,
       criteriaJson: JSON.stringify(decision.criteria),
       alternativesJson: JSON.stringify(decision.alternatives),
       criteriaComparisonsJson: JSON.stringify(decision.criteriaComparisons),
       alternativeComparisonsJson: JSON.stringify(decision.alternativeComparisons),
       overallRankingJson: decision.overallRanking ? JSON.stringify(decision.overallRanking) : null,
-      createdAt: decision.createdAt ? new Date(decision.createdAt) : new Date(),
+      createdAt: typeof decision.createdAt === 'string' ? decision.createdAt : new Date().toISOString(),
       userId: decision.userId || null
     };
 
@@ -96,7 +96,7 @@ export class DatabaseStorage implements IStorage {
       criteriaComparisons: decision.criteriaComparisons,
       alternativeComparisons: decision.alternativeComparisons,
       overallRanking: decision.overallRanking,
-      createdAt: newDecision.createdAt.toISOString()
+      createdAt: typeof newDecision.createdAt === 'string' ? newDecision.createdAt : newDecision.createdAt.toString()
     };
   }
 
@@ -131,7 +131,7 @@ export class DatabaseStorage implements IStorage {
       criteriaComparisons: decision.criteriaComparisons,
       alternativeComparisons: decision.alternativeComparisons,
       overallRanking: decision.overallRanking,
-      createdAt: updated.createdAt.toISOString()
+      createdAt: typeof updated.createdAt === 'string' ? updated.createdAt : updated.createdAt.toString()
     };
   }
 

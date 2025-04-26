@@ -51,8 +51,15 @@ export type AHPDecision = {
   criteriaComparisons: ComparisonMatrix;
   alternativeComparisons: AlternativeComparisons;
   overallRanking?: { [alternativeId: string]: number };
-  createdAt: string;
-  userId?: number;
+  createdAt: string | Date;
+  userId?: number | null;
+  
+  // Propriedades extras do DB (não expostas na API)
+  criteriaJson?: string;
+  alternativesJson?: string;
+  criteriaComparisonsJson?: string;
+  alternativeComparisonsJson?: string;
+  overallRankingJson?: string | null;
 };
 
 // Create insert schemas
@@ -85,8 +92,8 @@ export const decisionSchema = z.object({
   alternatives: z.array(alternativeSchema).min(2, "At least 2 alternatives are required"),
   criteriaComparisons: comparisonMatrixSchema,
   alternativeComparisons: alternativeComparisonsSchema,
-  createdAt: z.string(),
-  userId: z.number().optional(),
+  createdAt: z.union([z.string(), z.date(), z.instanceof(Date)]), // Aceita string ou Date
+  userId: z.number().nullable().optional(),
 });
 
 export const insertDecisionSchema = createInsertSchema(decisions);
