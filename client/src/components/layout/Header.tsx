@@ -20,7 +20,7 @@ export default function Header() {
           >
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
           </svg>
-          <h1 className="text-2xl font-bold text-primary">AHP Decision Tool</h1>
+          <h1 className="text-2xl font-bold text-primary">Ferramenta de Decisão AHP</h1>
         </div>
         <nav>
           <ul className="flex space-x-6">
@@ -32,7 +32,7 @@ export default function Header() {
                     location === "/tool" && "text-primary font-medium"
                   )}
                 >
-                  Tool
+                  Ferramenta
                 </a>
               </Link>
             </li>
@@ -44,7 +44,7 @@ export default function Header() {
                     location === "/guide" && "text-primary font-medium"
                   )}
                 >
-                  Guide
+                  Guia
                 </a>
               </Link>
             </li>
@@ -56,12 +56,15 @@ export default function Header() {
                     location === "/about" && "text-primary font-medium"
                   )}
                 >
-                  About AHP
+                  Sobre AHP
                 </a>
               </Link>
             </li>
           </ul>
         </nav>
+      </div>
+      <div className="bg-slate-100 text-center py-1 text-xs text-gray-600">
+        Powered By Alexandre Calaes
       </div>
     </header>
   );

@@ -7,20 +7,20 @@ export default function Home() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center max-w-3xl mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-neutral-dark">
-          Analytic Hierarchy Process Decision Tool
+          Ferramenta de Decisão AHP
         </h1>
         <p className="text-xl text-neutral-gray mb-8">
-          A modern approach to complex decision making for students
+          Uma abordagem moderna para tomada de decisões complexas para estudantes
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Button asChild size="lg" className="gap-2">
             <Link href="/tool">
-              Start Making Decisions <ArrowRight className="h-4 w-4" />
+              Comece a Tomar Decisões <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
             <Link href="/guide">
-              Learn How It Works
+              Aprenda Como Funciona
             </Link>
           </Button>
         </div>
@@ -43,9 +43,9 @@ export default function Home() {
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
           </div>
-          <h3 className="text-xl font-semibold mb-2">Compare Alternatives</h3>
+          <h3 className="text-xl font-semibold mb-2">Compare Alternativas</h3>
           <p className="text-neutral-gray">
-            Easily compare multiple options based on your specific criteria using pairwise comparisons.
+            Compare facilmente várias opções com base em seus critérios específicos usando comparações par a par.
           </p>
         </div>
 
@@ -65,9 +65,9 @@ export default function Home() {
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
           </div>
-          <h3 className="text-xl font-semibold mb-2">Save Time</h3>
+          <h3 className="text-xl font-semibold mb-2">Economize Tempo</h3>
           <p className="text-neutral-gray">
-            Make complex decisions faster by breaking them down into simpler, manageable components.
+            Tome decisões complexas mais rapidamente, dividindo-as em componentes mais simples e gerenciáveis.
           </p>
         </div>
 
@@ -90,51 +90,51 @@ export default function Home() {
               <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </div>
-          <h3 className="text-xl font-semibold mb-2">Detailed Reports</h3>
+          <h3 className="text-xl font-semibold mb-2">Relatórios Detalhados</h3>
           <p className="text-neutral-gray">
-            Get comprehensive analysis with visual representations of your decision priorities.
+            Obtenha análises abrangentes com representações visuais das prioridades de sua decisão.
           </p>
         </div>
       </div>
 
       {/* Use Cases Section */}
       <div className="bg-white p-8 rounded-lg shadow-md mb-16">
-        <h2 className="text-2xl font-bold mb-6 text-center">Common Use Cases for Students</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Casos de Uso Comuns para Estudantes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">College Selection</h3>
+            <h3 className="font-semibold mb-2">Escolha de Faculdade</h3>
             <p className="text-sm text-neutral-gray">
-              Compare universities based on academic programs, location, cost, and campus life.
+              Compare universidades com base em programas acadêmicos, localização, custo e vida no campus.
             </p>
           </div>
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Career Decisions</h3>
+            <h3 className="font-semibold mb-2">Decisões de Carreira</h3>
             <p className="text-sm text-neutral-gray">
-              Evaluate job offers considering salary, benefits, location, and growth opportunities.
+              Avalie ofertas de emprego considerando salário, benefícios, localização e oportunidades de crescimento.
             </p>
           </div>
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Research Topics</h3>
+            <h3 className="font-semibold mb-2">Tópicos de Pesquisa</h3>
             <p className="text-sm text-neutral-gray">
-              Select research topics based on interest, resources, and academic impact.
+              Selecione temas de pesquisa com base em interesse, recursos disponíveis e impacto acadêmico.
             </p>
           </div>
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Course Selection</h3>
+            <h3 className="font-semibold mb-2">Seleção de Disciplinas</h3>
             <p className="text-sm text-neutral-gray">
-              Choose elective courses by weighing difficulty, interest, and relevance to career.
+              Escolha disciplinas eletivas ponderando dificuldade, interesse e relevância para a carreira.
             </p>
           </div>
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Group Projects</h3>
+            <h3 className="font-semibold mb-2">Projetos em Grupo</h3>
             <p className="text-sm text-neutral-gray">
-              Decide on project approaches collectively by evaluating alternatives objectively.
+              Decida coletivamente sobre abordagens de projeto avaliando alternativas de forma objetiva.
             </p>
           </div>
           <div className="border border-neutral-medium rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Technology Purchases</h3>
+            <h3 className="font-semibold mb-2">Compras de Tecnologia</h3>
             <p className="text-sm text-neutral-gray">
-              Compare laptops, phones, or software based on specifications, price, and reviews.
+              Compare laptops, celulares ou software com base em especificações, preço e avaliações.
             </p>
           </div>
         </div>
@@ -142,13 +142,17 @@ export default function Home() {
 
       {/* CTA Section */}
       <div className="bg-primary text-white p-8 rounded-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">Ready to Make Better Decisions?</h2>
+        <h2 className="text-2xl font-bold mb-4">Pronto para Tomar Melhores Decisões?</h2>
         <p className="mb-6 max-w-2xl mx-auto">
-          Start using our AHP Decision Tool today and experience a structured approach to decision making.
+          Comece a usar nossa Ferramenta de Decisão AHP hoje e experimente uma abordagem estruturada para tomada de decisões.
         </p>
         <Button asChild variant="secondary" size="lg">
-          <Link href="/tool">Get Started Now</Link>
+          <Link href="/tool">Comece Agora</Link>
         </Button>
+      </div>
+      
+      <div className="text-center mt-8 text-sm text-gray-500">
+        Powered By Alexandre Calaes
       </div>
     </div>
   );

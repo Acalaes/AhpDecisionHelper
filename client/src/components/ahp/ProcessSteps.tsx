@@ -21,8 +21,8 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
             <span className="text-primary-dark font-medium">1</span>
           )}
         </div>
-        <h3 className="font-medium mb-1">Define Problem</h3>
-        <p className="text-sm text-neutral-dark">Identify criteria and alternatives</p>
+        <h3 className="font-medium mb-1">Definir Problema</h3>
+        <p className="text-sm text-neutral-dark">Identificar critérios e alternativas</p>
       </div>
 
       <div 
@@ -39,8 +39,8 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
             <span className="text-primary-dark font-medium">2</span>
           )}
         </div>
-        <h3 className="font-medium mb-1">Compare Criteria</h3>
-        <p className="text-sm text-neutral-dark">Compare criteria pairwise</p>
+        <h3 className="font-medium mb-1">Comparar Critérios</h3>
+        <p className="text-sm text-neutral-dark">Comparar critérios par a par</p>
       </div>
 
       <div 
@@ -57,8 +57,8 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
             <span className="text-primary-dark font-medium">3</span>
           )}
         </div>
-        <h3 className="font-medium mb-1">Compare Alternatives</h3>
-        <p className="text-sm text-neutral-dark">Compare alternatives by criteria</p>
+        <h3 className="font-medium mb-1">Comparar Alternativas</h3>
+        <p className="text-sm text-neutral-dark">Comparar alternativas por critérios</p>
       </div>
 
       <div 
@@ -71,8 +71,8 @@ export default function ProcessSteps({ currentStep }: ProcessStepsProps) {
         <div className="flex justify-center items-center mb-2 h-8 w-8 mx-auto rounded-full bg-white bg-opacity-20">
           <span className="text-primary-dark font-medium">4</span>
         </div>
-        <h3 className="font-medium mb-1">Make Decision</h3>
-        <p className="text-sm text-neutral-dark">Analyze results and decide</p>
+        <h3 className="font-medium mb-1">Tomar Decisão</h3>
+        <p className="text-sm text-neutral-dark">Analisar resultados e decidir</p>
       </div>
     </div>
   );

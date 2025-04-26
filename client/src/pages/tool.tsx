@@ -27,14 +27,14 @@ export default function Tool() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/decisions"] });
       toast({
-        title: "Decision saved",
-        description: "Your decision has been saved successfully",
+        title: "Decisão salva",
+        description: "Sua decisão foi salva com sucesso",
       });
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: `Failed to save decision: ${error.message}`,
+        title: "Erro",
+        description: `Falha ao salvar decisão: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -138,11 +138,11 @@ export default function Tool() {
       <Card>
         <CardContent className="p-6 md:p-8">
           <h2 className="text-xl md:text-2xl font-semibold text-neutral-dark mb-4">
-            Analytic Hierarchy Process (AHP) Tool
+            Ferramenta Processo de Análise Hierárquica (AHP)
           </h2>
           <p className="text-neutral-dark mb-6">
-            Make better decisions with the Analytic Hierarchy Process (AHP). This tool helps you evaluate alternatives
-            based on multiple criteria by making pairwise comparisons.
+            Tome melhores decisões com o Processo de Análise Hierárquica (AHP). Esta ferramenta ajuda você a avaliar alternativas
+            com base em múltiplos critérios, fazendo comparações par a par.
           </p>
 
           <ProcessSteps currentStep={currentStep} />
@@ -192,6 +192,10 @@ export default function Tool() {
               onNewDecision={handleNewDecision}
             />
           )}
+          
+          <div className="text-center mt-8 text-sm text-gray-500">
+            Powered By Alexandre Calaes
+          </div>
         </CardContent>
       </Card>
     </section>

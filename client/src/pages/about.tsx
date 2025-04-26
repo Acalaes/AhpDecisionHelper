@@ -7,82 +7,82 @@ export default function About() {
     <section className="mb-12">
       <Card>
         <CardContent className="p-6 md:p-8">
-          <h2 className="text-xl md:text-2xl font-semibold text-neutral-dark mb-4">About AHP</h2>
+          <h2 className="text-xl md:text-2xl font-semibold text-neutral-dark mb-4">Sobre AHP</h2>
 
           <div className="prose max-w-none">
             <p>
-              The Analytic Hierarchy Process (AHP) is a structured technique for organizing and analyzing complex decisions.
-              Developed by Thomas L. Saaty in the 1970s, it has become one of the most widely used methods for multi-criteria decision making.
+              O Processo de Análise Hierárquica (AHP) é uma técnica estruturada para organizar e analisar decisões complexas.
+              Desenvolvido por Thomas L. Saaty na década de 1970, tornou-se um dos métodos mais utilizados para tomada de decisão com múltiplos critérios.
             </p>
 
-            <h3>Key Advantages of AHP</h3>
+            <h3>Principais Vantagens do AHP</h3>
             <ul>
-              <li>Combines both qualitative and quantitative factors in decision making</li>
-              <li>Provides a structured way to handle complex, multi-faceted decisions</li>
-              <li>Allows for consistency checks to validate the decision process</li>
-              <li>Helps create consensus among decision makers</li>
-              <li>Produces numerical priorities that can be easily compared</li>
+              <li>Combina fatores qualitativos e quantitativos na tomada de decisão</li>
+              <li>Fornece uma maneira estruturada de lidar com decisões complexas e multifacetadas</li>
+              <li>Permite verificações de consistência para validar o processo de decisão</li>
+              <li>Ajuda a criar consenso entre os tomadores de decisão</li>
+              <li>Produz prioridades numéricas que podem ser facilmente comparadas</li>
             </ul>
 
-            <h3>Applications of AHP</h3>
+            <h3>Aplicações do AHP</h3>
             <p>
-              AHP is used across numerous fields including business strategy, public policy, resource allocation,
-              healthcare, engineering, and education. Some common applications include:
+              O AHP é usado em diversos campos, incluindo estratégia empresarial, políticas públicas, alocação de recursos,
+              saúde, engenharia e educação. Algumas aplicações comuns incluem:
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
               <div className="bg-neutral-light p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Business</h4>
+                <h4 className="font-medium mb-2">Empresarial</h4>
                 <ul className="list-disc list-inside text-sm">
-                  <li>Vendor selection</li>
-                  <li>Product evaluation</li>
-                  <li>Project prioritization</li>
-                  <li>Investment decisions</li>
+                  <li>Seleção de fornecedores</li>
+                  <li>Avaliação de produtos</li>
+                  <li>Priorização de projetos</li>
+                  <li>Decisões de investimento</li>
                 </ul>
               </div>
               <div className="bg-neutral-light p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Government</h4>
+                <h4 className="font-medium mb-2">Governamental</h4>
                 <ul className="list-disc list-inside text-sm">
-                  <li>Policy evaluation</li>
-                  <li>Resource allocation</li>
-                  <li>Urban planning</li>
-                  <li>Risk assessment</li>
+                  <li>Avaliação de políticas</li>
+                  <li>Alocação de recursos</li>
+                  <li>Planejamento urbano</li>
+                  <li>Avaliação de riscos</li>
                 </ul>
               </div>
               <div className="bg-neutral-light p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Personal</h4>
+                <h4 className="font-medium mb-2">Pessoal</h4>
                 <ul className="list-disc list-inside text-sm">
-                  <li>Career choices</li>
-                  <li>Major purchases</li>
-                  <li>School selection</li>
-                  <li>Housing decisions</li>
+                  <li>Escolhas de carreira</li>
+                  <li>Compras importantes</li>
+                  <li>Seleção de escolas</li>
+                  <li>Decisões de moradia</li>
                 </ul>
               </div>
             </div>
 
-            <h3>Mathematical Foundation</h3>
+            <h3>Fundamento Matemático</h3>
             <p>
-              AHP uses matrix algebra to determine the weights and priorities. The process involves:
+              O AHP utiliza álgebra matricial para determinar pesos e prioridades. O processo envolve:
             </p>
             <ol>
-              <li>Creating comparison matrices</li>
-              <li>Computing the principal eigenvector to derive priorities</li>
-              <li>Calculating the consistency ratio to verify judgment consistency</li>
-              <li>Synthesizing the results to determine overall rankings</li>
+              <li>Criação de matrizes de comparação</li>
+              <li>Cálculo do autovetor principal para derivar prioridades</li>
+              <li>Cálculo da razão de consistência para verificar a coerência dos julgamentos</li>
+              <li>Síntese dos resultados para determinar a classificação geral</li>
             </ol>
 
             <div className="bg-neutral-lightest p-4 rounded-lg border border-neutral-medium mt-6">
-              <p className="font-medium mb-2">Further Learning Resources:</p>
+              <p className="font-medium mb-2">Recursos para Aprendizado Adicional:</p>
               <ul className="space-y-2">
                 <li>
                   <a 
-                    href="https://en.wikipedia.org/wiki/Analytic_hierarchy_process" 
+                    href="https://pt.wikipedia.org/wiki/Analytic_Hierarchy_Process" 
                     className="text-primary hover:underline flex items-center"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Wikipedia: Analytic Hierarchy Process
+                    Wikipedia: Processo de Análise Hierárquica
                   </a>
                 </li>
                 <li>
@@ -93,7 +93,7 @@ export default function About() {
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Video Tutorial: Introduction to AHP
+                    Tutorial em Vídeo: Introdução ao AHP
                   </a>
                 </li>
                 <li>
@@ -104,11 +104,15 @@ export default function About() {
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    BPMSG AHP Online System
+                    Sistema Online AHP BPMSG
                   </a>
                 </li>
               </ul>
             </div>
+          </div>
+          
+          <div className="text-center mt-8 text-sm text-gray-500">
+            Powered By Alexandre Calaes
           </div>
         </CardContent>
       </Card>

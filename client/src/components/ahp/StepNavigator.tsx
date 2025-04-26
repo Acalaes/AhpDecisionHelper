@@ -17,7 +17,7 @@ export default function StepNavigator({ currentStep, onStepChange }: StepNavigat
         )}
         onClick={() => onStepChange(1)}
       >
-        1. Define Problem
+        1. Definir Problema
       </button>
       <button
         className={cn(
@@ -29,7 +29,7 @@ export default function StepNavigator({ currentStep, onStepChange }: StepNavigat
         onClick={() => onStepChange(2)}
         disabled={currentStep < 2}
       >
-        2. Compare Criteria
+        2. Comparar Critérios
       </button>
       <button
         className={cn(
@@ -41,7 +41,7 @@ export default function StepNavigator({ currentStep, onStepChange }: StepNavigat
         onClick={() => onStepChange(3)}
         disabled={currentStep < 3}
       >
-        3. Compare Alternatives
+        3. Comparar Alternativas
       </button>
       <button
         className={cn(
@@ -53,7 +53,7 @@ export default function StepNavigator({ currentStep, onStepChange }: StepNavigat
         onClick={() => onStepChange(4)}
         disabled={currentStep < 4}
       >
-        4. Results
+        4. Resultados
       </button>
     </div>
   );
