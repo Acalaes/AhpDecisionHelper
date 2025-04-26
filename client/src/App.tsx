@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Tool from "@/pages/tool";
 import Guide from "@/pages/guide";
 import About from "@/pages/about";
+import MyDecisions from "@/pages/my-decisions";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -19,6 +20,7 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/tool" component={Tool} />
+          <Route path="/my-decisions" component={MyDecisions} />
           <Route path="/guide" component={Guide} />
           <Route path="/about" component={About} />
           <Route component={NotFound} />

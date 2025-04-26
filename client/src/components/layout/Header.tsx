@@ -37,6 +37,18 @@ export default function Header() {
               </Link>
             </li>
             <li>
+              <Link href="/my-decisions">
+                <a
+                  className={cn(
+                    "text-neutral-dark hover:text-primary transition",
+                    location === "/my-decisions" && "text-primary font-medium"
+                  )}
+                >
+                  Minhas Decisões
+                </a>
+              </Link>
+            </li>
+            <li>
               <Link href="/guide">
                 <a
                   className={cn(
