@@ -188,7 +188,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(feedback);
     } catch (error) {
       console.error("Erro ao salvar feedback:", error);
-      res.status(500).json({ message: "Erro ao salvar feedback" });
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      res.status(500).json({ 
+        message: "Erro ao salvar feedback", 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      });
     }
   });
 
