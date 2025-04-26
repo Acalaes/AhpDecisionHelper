@@ -34,16 +34,6 @@ export default function FeedbackButton({ decisionId, decisionName }: FeedbackBut
       return;
     }
     
-    // Se o usuário está autenticado mas não tem ID de decisão
-    if (open && !decisionId) {
-      toast({
-        title: "Nenhuma decisão selecionada",
-        description: "Por favor, avalie a ferramenta após completar uma decisão.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     // Se tudo estiver ok, atualiza o estado do modal
     setOpen(open);
   };
@@ -69,10 +59,10 @@ export default function FeedbackButton({ decisionId, decisionName }: FeedbackBut
           </DialogDescription>
         </DialogHeader>
         
-        {user && decisionId && (
+        {user && (
           <FeedbackForm 
             decisionId={decisionId} 
-            decisionName={decisionName || "Ferramenta AHP"}
+            decisionName={decisionId ? (decisionName || "Decisão Sem Nome") : "Feedback Geral"}
             onComplete={() => setOpen(false)}
           />
         )}

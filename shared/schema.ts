@@ -51,11 +51,12 @@ export const userEngagements = pgTable("user_engagements", {
 export const feedbacks = pgTable("feedbacks", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  decisionId: integer("decision_id").notNull().references(() => decisions.id),
-  utilityRating: integer("utility_rating").notNull(), // escala de 1-5
+  decisionId: integer("decision_id").references(() => decisions.id), // tornando opcional
+  utilityRating: integer("utility_rating").notNull(), // escala de 1-10
   testimonial: text("testimonial"), // depoimento opcional
   allowPublicDisplay: boolean("allow_public_display").default(false), // permissão para exibir depoimento
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  feedbackType: varchar("feedback_type", { length: 20 }).default("decision"), // "decision" ou "general"
 });
 
 // Tabela para estatísticas agregadas (atualizadas periodicamente)
@@ -145,10 +146,11 @@ export const insertDecisionSchema = createInsertSchema(decisions);
 
 // Schemas para as novas entidades
 export const feedbackSchema = z.object({
-  decisionId: z.number(),
-  utilityRating: z.number().min(1).max(5),
+  decisionId: z.number().optional(),
+  utilityRating: z.number().min(1).max(10),
   testimonial: z.string().optional(),
   allowPublicDisplay: z.boolean().default(false),
+  feedbackType: z.enum(["decision", "general"]).default("general"),
 });
 
 export const insertFeedbackSchema = createInsertSchema(feedbacks).omit({
