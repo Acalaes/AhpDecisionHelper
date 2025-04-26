@@ -27,7 +27,7 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
           <ProtectedRoute path="/tool" component={Tool} />
           <ProtectedRoute path="/my-decisions" component={MyDecisions} />
-          <Route path="/admin" component={Dashboard} />
+          <ProtectedRoute path="/admin" component={Dashboard} />
           <Route path="/guide" component={Guide} />
           <Route path="/about" component={About} />
           <Route component={NotFound} />

@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, RefreshCw, ChevronDown, ChevronUp, Users, FileText, BarChart2, Calendar, Clock, Star, ThumbsUp, MessageSquare } from "lucide-react";
+import { Loader2, RefreshCw, ChevronDown, ChevronUp, Users, FileText, BarChart2, Calendar, Clock, Star, ThumbsUp, MessageSquare, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import CategoryDistribution from "@/components/dashboard/CategoryDistribution";
 import MetricsOverTime from "@/components/dashboard/MetricsOverTime";
@@ -15,6 +15,9 @@ import UserFeedbackTable from "@/components/dashboard/UserFeedbackTable";
 import { Feedback } from "@shared/schema";
 import { format, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useAuth } from "@/hooks/use-auth";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLocation } from "wouter";
 
 interface MetricCardProps {
   title: string;
@@ -60,47 +63,73 @@ function MetricCard({ title, value, description, icon, trend, trendValue, isLoad
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   
+  // Verificar se o usuário é administrador
+  const isAdmin = user?.isAdmin === true;
+  
+  useEffect(() => {
+    // Redirecionar para página inicial se não for admin
+    if (user && !isAdmin) {
+      toast({
+        title: "Acesso restrito",
+        description: "Esta página é restrita a administradores.",
+        variant: "destructive"
+      });
+      navigate("/");
+    }
+  }, [user, isAdmin, navigate, toast]);
+  
+  // Queries protegidas por admin
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['/api/admin/metrics/categories'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: completionTime, isLoading: completionTimeLoading } = useQuery({
     queryKey: ['/api/admin/metrics/completion-time'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: ratings, isLoading: ratingsLoading } = useQuery({
     queryKey: ['/api/admin/metrics/rating'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: usersOverTime, isLoading: usersOverTimeLoading } = useQuery({
     queryKey: ['/api/admin/metrics/users-over-time'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: decisionsOverTime, isLoading: decisionsOverTimeLoading } = useQuery({
     queryKey: ['/api/admin/metrics/decisions-over-time'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: stepEngagement, isLoading: stepEngagementLoading } = useQuery({
     queryKey: ['/api/admin/metrics/step-engagement'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: aggregateMetrics, isLoading: aggregateMetricsLoading } = useQuery({
     queryKey: ['/api/admin/metrics/aggregate'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
   
   const { data: feedbacks, isLoading: feedbacksLoading } = useQuery<Feedback[]>({
     queryKey: ['/api/feedback/public'],
     queryFn: getQueryFn({ on401: "throw" }),
+    enabled: isAdmin,
   });
 
   const refreshMetrics = async () => {
@@ -217,6 +246,22 @@ export default function Dashboard() {
     ? Math.round((positiveFeedbacks / feedbacks.length) * 100)
     : 0;
     
+  // Se o usuário não for administrador, mostre uma mensagem e não renderize o restante
+  if (user && !isAdmin) {
+    return (
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Acesso Restrito</AlertTitle>
+          <AlertDescription>
+            Esta página é restrita a administradores. Você será redirecionado em alguns instantes.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Renderize o dashboard para administradores
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
