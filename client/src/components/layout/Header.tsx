@@ -37,9 +37,9 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/">
-            <a className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 cursor-pointer">
               <span className="text-xl font-bold">AHP Tool</span>
-            </a>
+            </div>
           </Link>
         </div>
 
@@ -47,24 +47,24 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-6">
           <div className="flex gap-1">
             <Link href="/">
-              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+              <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                 Início
-              </a>
+              </div>
             </Link>
             <Link href="/tool">
-              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+              <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                 Ferramenta
-              </a>
+              </div>
             </Link>
             <Link href="/guide">
-              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+              <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                 Guia
-              </a>
+              </div>
             </Link>
             <Link href="/about">
-              <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+              <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                 Sobre
-              </a>
+              </div>
             </Link>
           </div>
 
@@ -75,18 +75,18 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 {user && (
                   <Link href="/my-decisions">
-                    <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                       Minhas Decisões
-                    </a>
+                    </div>
                   </Link>
                 )}
                 
                 {isAdmin && (
                   <Link href="/dashboard">
-                    <a className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                    <div className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 cursor-pointer ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                       <BarChart2 className="h-4 w-4" />
                       <span>Dashboard</span>
-                    </a>
+                    </div>
                   </Link>
                 )}
                 
@@ -144,40 +144,40 @@ export default function Header() {
             <div className="relative bg-background p-4 w-3/4 min-h-screen ml-auto">
               <div className="flex flex-col space-y-4 mt-4">
                 <Link href="/">
-                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                  <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                     Início
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/tool">
-                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                  <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/tool" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                     Ferramenta
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/guide">
-                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                  <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/guide" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                     Guia
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/about">
-                  <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                  <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/about" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                     Sobre
-                  </a>
+                  </div>
                 </Link>
                 
                 {user ? (
                   <>
                     <Link href="/my-decisions">
-                      <a className={`px-3 py-2 text-sm font-medium rounded-md ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                      <div className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${location === "/my-decisions" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                         Minhas Decisões
-                      </a>
+                      </div>
                     </Link>
                     
                     {isAdmin && (
                       <Link href="/dashboard">
-                        <a className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
+                        <div className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 cursor-pointer ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
                           <BarChart2 className="h-4 w-4" />
                           <span>Dashboard</span>
-                        </a>
+                        </div>
                       </Link>
                     )}
                     
