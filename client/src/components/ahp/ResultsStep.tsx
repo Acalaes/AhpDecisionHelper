@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, Printer, RotateCcw } from "lucide-react";
+import { ArrowLeft, Save, Printer, RotateCcw, Calculator } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Chart } from "@/components/ui/chart";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Criterion, Alternative, AHPDecision } from "@shared/schema";
 import { formatNumber } from "@/lib/utils";
 import { calculateOverallPriorities } from "@/lib/ahp";
+import CalculationDetails from "./CalculationDetails";
 
 interface ResultsStepProps {
   decision: AHPDecision;
@@ -135,6 +136,14 @@ export default function ResultsStep({
     window.print();
   };
 
+  const [showDetails, setShowDetails] = useState(false);
+
+  // Clona a decisão e adiciona overallRanking se não estiver presente
+  const decisionWithRanking = {
+    ...decision,
+    overallRanking: decision.overallRanking || overallPriorities
+  };
+
   return (
     <div>
       <div className="mb-6">
@@ -209,7 +218,19 @@ export default function ResultsStep({
 
         {/* Detailed Matrix */}
         <div className="mt-6">
-          <h4 className="font-medium mb-3">Prioridades das Alternativas por Critério</h4>
+          <div className="flex justify-between items-center mb-3">
+            <h4 className="font-medium">Prioridades das Alternativas por Critério</h4>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowDetails(!showDetails)}
+              className="flex items-center"
+            >
+              <Calculator className="mr-2 h-4 w-4" />
+              {showDetails ? "Esconder Detalhes dos Cálculos" : "Mostrar Detalhes dos Cálculos"}
+            </Button>
+          </div>
+          
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left text-neutral-dark">
               <thead className="text-xs uppercase bg-neutral-light">
@@ -253,6 +274,11 @@ export default function ResultsStep({
             </table>
           </div>
         </div>
+
+        {/* Calculation Details Component */}
+        {showDetails && (
+          <CalculationDetails decision={decisionWithRanking} />
+        )}
 
         {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
