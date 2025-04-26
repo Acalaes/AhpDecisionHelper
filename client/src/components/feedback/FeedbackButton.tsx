@@ -12,6 +12,7 @@ import { MessageSquare } from "lucide-react";
 import FeedbackForm from "./FeedbackForm";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface FeedbackButtonProps {
   decisionId?: number;
@@ -22,6 +23,7 @@ export default function FeedbackButton({ decisionId, decisionName }: FeedbackBut
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const [_, navigate] = useLocation();
 
   const handleOpenChange = (open: boolean) => {
     // Se estiver tentando abrir o diálogo mas o usuário não está autenticado
@@ -31,6 +33,12 @@ export default function FeedbackButton({ decisionId, decisionName }: FeedbackBut
         description: "Você precisa estar logado para enviar feedback.",
         variant: "destructive",
       });
+      
+      // Redireciona para a página de login após um breve atraso
+      setTimeout(() => {
+        navigate("/auth");
+      }, 1500);
+      
       return;
     }
     

@@ -246,7 +246,7 @@ export default function Dashboard() {
     ? Math.round((positiveFeedbacks / feedbacks.length) * 100)
     : 0;
     
-  // Se o usuário não for administrador, mostre uma mensagem e não renderize o restante
+  // Se o usuário não for administrador, mostre uma mensagem
   if (user && !isAdmin) {
     return (
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -254,7 +254,7 @@ export default function Dashboard() {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Acesso Restrito</AlertTitle>
           <AlertDescription>
-            Esta página é restrita a administradores. Você será redirecionado em alguns instantes.
+            Esta página é restrita a administradores. Você será redirecionado para a página inicial em alguns instantes.
           </AlertDescription>
         </Alert>
       </div>
