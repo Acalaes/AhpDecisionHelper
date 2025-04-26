@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AHPDecision, Criterion, Alternative } from "@shared/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 import ProcessSteps from "@/components/ahp/ProcessSteps";
 import StepNavigator from "@/components/ahp/StepNavigator";
 import DefineStep from "@/components/ahp/DefineStep";
@@ -15,11 +16,48 @@ import { createEmptyDecision, updateCriteriaComparisons, updateAlternativeCompar
 export default function Tool() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
+  const [location, params] = useLocation();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [decision, setDecision] = useState<AHPDecision>(createEmptyDecision());
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  // Mutation for saving the decision
+  // Carregar decisão do localStorage se estiver no modo de edição
+  useEffect(() => {
+    // Verificar se temos uma decisão para editar (via query param ou localStorage)
+    const searchParams = new URLSearchParams(window.location.search);
+    const isEdit = searchParams.get('edit') === 'true';
+    
+    if (isEdit) {
+      try {
+        const savedDecision = localStorage.getItem('editDecision');
+        if (savedDecision) {
+          const parsedDecision = JSON.parse(savedDecision) as AHPDecision;
+          setDecision(parsedDecision);
+          setIsEditMode(true);
+          // Ir para a etapa de resultados se a decisão estiver completa
+          setCurrentStep(4);
+          
+          toast({
+            title: "Decisão carregada",
+            description: "A decisão foi carregada com sucesso para edição"
+          });
+          
+          // Limpar o localStorage após carregar
+          localStorage.removeItem('editDecision');
+        }
+      } catch (error) {
+        console.error("Erro ao carregar decisão:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a decisão para edição",
+          variant: "destructive"
+        });
+      }
+    }
+  }, [toast]);
+
+  // Mutation for creating a new decision
   const createDecisionMutation = useMutation({
     mutationFn: (newDecision: AHPDecision) => {
       return apiRequest("POST", "/api/decisions", newDecision);
@@ -35,6 +73,27 @@ export default function Tool() {
       toast({
         title: "Erro",
         description: `Falha ao salvar decisão: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for updating an existing decision
+  const updateDecisionMutation = useMutation({
+    mutationFn: (decisionToUpdate: AHPDecision) => {
+      return apiRequest("PUT", `/api/decisions/${decisionToUpdate.id}`, decisionToUpdate);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/decisions"] });
+      toast({
+        title: "Decisão atualizada",
+        description: "Sua decisão foi atualizada com sucesso",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: `Falha ao atualizar decisão: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -130,7 +189,13 @@ export default function Tool() {
 
   // Save the decision
   const handleSaveDecision = () => {
-    createDecisionMutation.mutate(decision);
+    if (isEditMode && decision.id) {
+      // Atualizar uma decisão existente
+      updateDecisionMutation.mutate(decision);
+    } else {
+      // Criar uma nova decisão
+      createDecisionMutation.mutate(decision);
+    }
   };
 
   return (
