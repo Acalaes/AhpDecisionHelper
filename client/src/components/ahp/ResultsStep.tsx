@@ -13,12 +13,14 @@ interface ResultsStepProps {
   decision: AHPDecision;
   onBack: () => void;
   onNewDecision: () => void;
+  onSaveDecision?: () => void;
 }
 
 export default function ResultsStep({
   decision,
   onBack,
   onNewDecision,
+  onSaveDecision,
 }: ResultsStepProps) {
   const { toast } = useToast();
   const [overallPriorities, setOverallPriorities] = useState<{ [alternativeId: string]: number }>({});
@@ -117,12 +119,16 @@ export default function ResultsStep({
   };
 
   const handleSaveResults = () => {
-    // In a real application, this would save to the backend
-    // For now, we'll just show a toast
-    toast({
-      title: "Resultados Salvos",
-      description: "Os resultados da sua decisão foram salvos com sucesso.",
-    });
+    // Usar a função onSaveDecision do componente pai se disponível
+    if (onSaveDecision) {
+      onSaveDecision();
+    } else {
+      // Fallback para o comportamento anterior (apenas mostrar o toast)
+      toast({
+        title: "Resultados Salvos",
+        description: "Os resultados da sua decisão foram salvos com sucesso.",
+      });
+    }
   };
 
   const handlePrintReport = () => {

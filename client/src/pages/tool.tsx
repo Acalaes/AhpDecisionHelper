@@ -190,6 +190,7 @@ export default function Tool() {
               decision={decision}
               onBack={handleBack}
               onNewDecision={handleNewDecision}
+              onSaveDecision={handleSaveDecision}
             />
           )}
           
