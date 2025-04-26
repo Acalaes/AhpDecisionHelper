@@ -277,7 +277,11 @@ export class DatabaseStorage implements IStorage {
       .from(decisions)
       .groupBy(decisions.category);
     
-    return result;
+    // Garantir que todos os resultados tenham uma categoria não nula
+    return result.map(item => ({
+      category: item.category || 'other',
+      count: item.count
+    }));
   }
 
   async getAverageCompletionTime(): Promise<number> {
@@ -351,7 +355,12 @@ export class DatabaseStorage implements IStorage {
       .groupBy(userEngagements.actionType)
       .orderBy(userEngagements.actionType);
     
-    return result;
+    // Converter para o formato esperado com tipos corretos
+    return result.map(item => ({
+      step: item.step,
+      averageDuration: item.averageDuration ? Number(item.averageDuration) : 0,
+      count: item.count
+    }));
   }
 
   // Implementação de métodos de métricas agregadas
