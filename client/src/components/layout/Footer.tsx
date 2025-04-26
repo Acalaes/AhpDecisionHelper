@@ -15,18 +15,18 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Links Rápidos</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/tool">
-                  <a className="text-neutral-medium hover:text-white transition">Ferramenta de Decisão</a>
+                <Link href="/tool" className="text-neutral-medium hover:text-white transition">
+                  Ferramenta de Decisão
                 </Link>
               </li>
               <li>
-                <Link href="/guide">
-                  <a className="text-neutral-medium hover:text-white transition">Guia do Estudante</a>
+                <Link href="/guide" className="text-neutral-medium hover:text-white transition">
+                  Guia do Estudante
                 </Link>
               </li>
               <li>
-                <Link href="/about">
-                  <a className="text-neutral-medium hover:text-white transition">Sobre AHP</a>
+                <Link href="/about" className="text-neutral-medium hover:text-white transition">
+                  Sobre AHP
                 </Link>
               </li>
             </ul>
