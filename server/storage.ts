@@ -1,6 +1,9 @@
 import { users, type User, type InsertUser, decisions, type Decision, type InsertDecision, type AHPDecision } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
 // Interface for storage operations
 export interface IStorage {
@@ -14,9 +17,22 @@ export interface IStorage {
   createDecision(decision: AHPDecision): Promise<AHPDecision>;
   updateDecision(id: number, decision: AHPDecision): Promise<AHPDecision | undefined>;
   deleteDecision(id: number): Promise<boolean>;
+  
+  // Session store
+  sessionStore: session.SessionStore;
 }
 
 export class DatabaseStorage implements IStorage {
+  sessionStore: session.SessionStore;
+  
+  constructor() {
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+  }
+  
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
