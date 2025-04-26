@@ -28,19 +28,33 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
     try {
       setIsSubmitting(true);
       
-      const feedbackData: any = {
+      // Validação para garantir valores dentro dos limites aceitos
+      if (rating < 1 || rating > 10) {
+        throw new Error("A avaliação deve estar entre 1 e 10");
+      }
+      
+      const feedbackData = {
         utilityRating: rating,
-        testimonial: testimonial.trim() || null,
-        allowPublicDisplay,
+        testimonial: testimonial.trim() || undefined, // Usar undefined para que seja omitido em vez de null
+        allowPublicDisplay: !!allowPublicDisplay, // Garantir que seja booleano
         feedbackType: decisionId ? "decision" : "general"
       };
       
       // Adiciona o ID da decisão somente se ele existir
       if (decisionId) {
+        // @ts-ignore - Adicionamos dinamicamente a propriedade
         feedbackData.decisionId = decisionId;
       }
       
-      await apiRequest("POST", "/api/feedback", feedbackData);
+      console.log("Enviando feedback:", feedbackData);
+      
+      const response = await apiRequest("POST", "/api/feedback", feedbackData);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Resposta de erro:", response.status, errorData);
+        throw new Error(errorData.message || `Erro ${response.status} ao enviar feedback`);
+      }
       
       // Invalidar consultas relevantes para atualizar os dados
       await queryClient.invalidateQueries({ queryKey: ['/api/feedback'] });
@@ -55,9 +69,15 @@ export default function FeedbackForm({ decisionId, decisionName, onComplete }: F
       onComplete();
     } catch (error) {
       console.error("Erro ao enviar feedback:", error);
+      
+      // Mensagem de erro mais detalhada
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Erro desconhecido ao enviar feedback";
+        
       toast({
         title: "Erro ao enviar feedback",
-        description: "Não foi possível enviar seu feedback. Tente novamente mais tarde.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

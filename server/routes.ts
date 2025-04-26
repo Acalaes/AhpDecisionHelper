@@ -8,7 +8,7 @@ import { setupAuth } from "./auth";
 
 // Middleware para verificar se o usuário está autenticado
 function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && req.user) {
     return next();
   }
   res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
@@ -157,20 +157,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // === Rotas de Feedback ===
   app.post("/api/feedback", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
+      // Verificar se o usuário está autenticado
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          message: "Usuário não autenticado. Faça login para enviar feedback."
+        });
+      }
+      
       let feedbackData = req.body as InsertFeedback;
       
-      // Valide os dados recebidos (pode incluir ou não decisionId)
+      // Validação manual adicional para maior segurança
+      if (!feedbackData.utilityRating || feedbackData.utilityRating < 1 || feedbackData.utilityRating > 10) {
+        return res.status(400).json({
+          message: "A avaliação deve estar entre 1 e 10"
+        });
+      }
+      
+      // Preparar os dados com valores padrão corretos
+      feedbackData = {
+        ...feedbackData,
+        // Garantir que feedbackType exista e seja válido
+        feedbackType: feedbackData.feedbackType || (feedbackData.decisionId ? "decision" : "general"),
+        // Garantir que allowPublicDisplay seja booleano
+        allowPublicDisplay: !!feedbackData.allowPublicDisplay,
+        // Se o testimonial estiver vazio, use undefined em vez de string vazia
+        testimonial: feedbackData.testimonial?.trim() || undefined
+      };
+      
       try {
-        feedbackData = {
-          ...feedbackData,
-          // Garantindo que feedbackType exista
-          feedbackType: feedbackData.feedbackType || (feedbackData.decisionId ? "decision" : "general")
-        };
-        
+        // Validação usando Zod
         insertFeedbackSchema.parse(feedbackData);
       } catch (error) {
         if (error instanceof ZodError) {
           const validationError = fromZodError(error);
+          console.error("Erro de validação Zod:", validationError);
           return res.status(400).json({ 
             message: "Erro de validação", 
             errors: validationError.details 
@@ -179,10 +199,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw error;
       }
       
+      console.log("Dados de feedback validados:", {
+        ...feedbackData,
+        userId: req.user.id
+      });
+      
       // Associar o feedback ao usuário logado
       const feedback = await storage.createFeedback({
         ...feedbackData,
-        userId: req.user!.id
+        userId: req.user.id
       });
       
       res.status(201).json(feedback);
