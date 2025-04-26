@@ -294,14 +294,10 @@ export default function ResultsStep({
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-start">
         <Button variant="outline" onClick={onBack} className="flex items-center">
           <ArrowLeft className="mr-1 h-4 w-4" /> Anterior
         </Button>
-        
-        <div className="text-sm text-gray-500">
-          Powered By Alexandre Calaes
-        </div>
       </div>
     </div>
   );

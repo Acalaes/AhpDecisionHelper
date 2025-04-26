@@ -193,10 +193,6 @@ export default function AlternativesStep({
           Calcular Resultados <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
       </div>
-      
-      <div className="text-center mt-8 text-sm text-gray-500">
-        Powered By Alexandre Calaes
-      </div>
     </div>
   );
 }
