@@ -1,15 +1,28 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { decisionSchema, type AHPDecision } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth } from "./auth";
+
+// Middleware para verificar se o usuário está autenticado
+function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar autenticação
+  setupAuth(app);
+  
   // API routes
-  app.get("/api/decisions", async (req: Request, res: Response) => {
+  app.get("/api/decisions", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
-      const userId = req.query.userId ? Number(req.query.userId) : undefined;
+      // Buscar apenas as decisões do usuário logado
+      const userId = req.user.id;
       const decisions = await storage.getDecisions(userId);
       res.json(decisions);
     } catch (error) {
@@ -17,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/decisions/:id", async (req: Request, res: Response) => {
+  app.get("/api/decisions/:id", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
       const decision = await storage.getDecision(id);
@@ -26,15 +39,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Decision not found" });
       }
       
+      // Verificar se a decisão pertence ao usuário logado
+      if (decision.userId !== req.user.id) {
+        return res.status(403).json({ message: "Acesso não autorizado a esta decisão" });
+      }
+      
       res.json(decision);
     } catch (error) {
       res.status(500).json({ message: "Failed to retrieve decision" });
     }
   });
 
-  app.post("/api/decisions", async (req: Request, res: Response) => {
+  app.post("/api/decisions", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
-      const decisionData = req.body as AHPDecision;
+      let decisionData = req.body as AHPDecision;
       
       try {
         decisionSchema.parse(decisionData);
@@ -48,6 +66,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         throw error;
       }
+      
+      // Associar a decisão ao usuário logado
+      decisionData = {
+        ...decisionData,
+        userId: req.user.id
+      };
       
       const newDecision = await storage.createDecision(decisionData);
       res.status(201).json(newDecision);
@@ -56,10 +80,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/decisions/:id", async (req: Request, res: Response) => {
+  app.put("/api/decisions/:id", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
-      const decisionData = req.body as AHPDecision;
+      let decisionData = req.body as AHPDecision;
+      
+      // Verificar se a decisão existe
+      const existingDecision = await storage.getDecision(id);
+      if (!existingDecision) {
+        return res.status(404).json({ message: "Decision not found" });
+      }
+      
+      // Verificar se a decisão pertence ao usuário logado
+      if (existingDecision.userId !== req.user.id) {
+        return res.status(403).json({ message: "Acesso não autorizado a esta decisão" });
+      }
       
       try {
         decisionSchema.parse(decisionData);
@@ -74,11 +109,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw error;
       }
       
-      const updatedDecision = await storage.updateDecision(id, decisionData);
+      // Garantir que o userId permaneça o mesmo
+      decisionData = {
+        ...decisionData,
+        userId: req.user.id
+      };
       
-      if (!updatedDecision) {
-        return res.status(404).json({ message: "Decision not found" });
-      }
+      const updatedDecision = await storage.updateDecision(id, decisionData);
       
       res.json(updatedDecision);
     } catch (error) {
@@ -86,14 +123,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/decisions/:id", async (req: Request, res: Response) => {
+  app.delete("/api/decisions/:id", ensureAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
-      const success = await storage.deleteDecision(id);
       
-      if (!success) {
+      // Verificar se a decisão existe
+      const existingDecision = await storage.getDecision(id);
+      if (!existingDecision) {
         return res.status(404).json({ message: "Decision not found" });
       }
+      
+      // Verificar se a decisão pertence ao usuário logado
+      if (existingDecision.userId !== req.user.id) {
+        return res.status(403).json({ message: "Acesso não autorizado a esta decisão" });
+      }
+      
+      const success = await storage.deleteDecision(id);
       
       res.status(204).end();
     } catch (error) {
