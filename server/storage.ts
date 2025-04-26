@@ -1,8 +1,8 @@
 import { users, type User, type InsertUser, decisions, type Decision, type InsertDecision, type AHPDecision } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
-import session from "express-session";
-import connectPg from "connect-pg-simple";
+import session, { Store } from "express-session";
+import ConnectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 
 // Interface for storage operations
@@ -19,14 +19,14 @@ export interface IStorage {
   deleteDecision(id: number): Promise<boolean>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
   
   constructor() {
-    const PostgresSessionStore = connectPg(session);
+    const PostgresSessionStore = ConnectPgSimple(session);
     this.sessionStore = new PostgresSessionStore({ 
       pool, 
       createTableIfMissing: true 
