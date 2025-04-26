@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,10 +14,11 @@ export const decisions = pgTable("decisions", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   userId: integer("user_id").references(() => users.id),
-  criteria: jsonb("criteria").notNull(),
-  alternatives: jsonb("alternatives").notNull(),
-  criteriaComparisons: jsonb("criteria_comparisons").notNull(),
-  alternativeComparisons: jsonb("alternative_comparisons").notNull(),
+  criteriaJson: text("criteria_json").notNull(),
+  alternativesJson: text("alternatives_json").notNull(),
+  criteriaComparisonsJson: text("criteria_comparisons_json").notNull(),
+  alternativeComparisonsJson: text("alternative_comparisons_json").notNull(),
+  overallRankingJson: text("overall_ranking_json"),
   createdAt: text("created_at").notNull(),
 });
 

@@ -1,4 +1,6 @@
 import { users, type User, type InsertUser, decisions, type Decision, type InsertDecision, type AHPDecision } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -14,69 +16,133 @@ export interface IStorage {
   deleteDecision(id: number): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private decisions: Map<number, AHPDecision>;
-  private userId: number;
-  private decisionId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.decisions = new Map();
-    this.userId = 1;
-    this.decisionId = 1;
-  }
-
-  // User operations
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
-  // Decision operations
   async getDecision(id: number): Promise<AHPDecision | undefined> {
-    return this.decisions.get(id);
+    const [decision] = await db.select().from(decisions).where(eq(decisions.id, id));
+    if (!decision) return undefined;
+    
+    // Parse the JSON fields
+    return {
+      ...decision,
+      criteria: JSON.parse(decision.criteriaJson || '[]'),
+      alternatives: JSON.parse(decision.alternativesJson || '[]'),
+      criteriaComparisons: JSON.parse(decision.criteriaComparisonsJson || '{}'),
+      alternativeComparisons: JSON.parse(decision.alternativeComparisonsJson || '{}'),
+      overallRanking: decision.overallRankingJson ? JSON.parse(decision.overallRankingJson) : undefined,
+      createdAt: decision.createdAt.toISOString()
+    };
   }
 
   async getDecisions(userId?: number): Promise<AHPDecision[]> {
-    const decisions = Array.from(this.decisions.values());
-    if (userId) {
-      return decisions.filter(decision => decision.userId === userId);
-    }
-    return decisions;
+    const query = userId 
+      ? db.select().from(decisions).where(eq(decisions.userId, userId))
+      : db.select().from(decisions);
+      
+    const decisionsData = await query;
+    
+    // Transform DB records to AHPDecision objects
+    return decisionsData.map(decision => ({
+      ...decision,
+      criteria: JSON.parse(decision.criteriaJson || '[]'),
+      alternatives: JSON.parse(decision.alternativesJson || '[]'),
+      criteriaComparisons: JSON.parse(decision.criteriaComparisonsJson || '{}'),
+      alternativeComparisons: JSON.parse(decision.alternativeComparisonsJson || '{}'),
+      overallRanking: decision.overallRankingJson ? JSON.parse(decision.overallRankingJson) : undefined,
+      createdAt: decision.createdAt.toISOString()
+    }));
   }
 
   async createDecision(decision: AHPDecision): Promise<AHPDecision> {
-    const id = this.decisionId++;
-    const newDecision: AHPDecision = { ...decision, id };
-    this.decisions.set(id, newDecision);
-    return newDecision;
+    // Prepare the decision data for database storage
+    const insertData: InsertDecision = {
+      name: decision.name,
+      criteriaJson: JSON.stringify(decision.criteria),
+      alternativesJson: JSON.stringify(decision.alternatives),
+      criteriaComparisonsJson: JSON.stringify(decision.criteriaComparisons),
+      alternativeComparisonsJson: JSON.stringify(decision.alternativeComparisons),
+      overallRankingJson: decision.overallRanking ? JSON.stringify(decision.overallRanking) : null,
+      createdAt: decision.createdAt ? new Date(decision.createdAt) : new Date(),
+      userId: decision.userId || null
+    };
+
+    const [newDecision] = await db
+      .insert(decisions)
+      .values(insertData)
+      .returning();
+
+    // Return the full AHPDecision object
+    return {
+      ...newDecision,
+      criteria: decision.criteria,
+      alternatives: decision.alternatives,
+      criteriaComparisons: decision.criteriaComparisons,
+      alternativeComparisons: decision.alternativeComparisons,
+      overallRanking: decision.overallRanking,
+      createdAt: newDecision.createdAt.toISOString()
+    };
   }
 
   async updateDecision(id: number, decision: AHPDecision): Promise<AHPDecision | undefined> {
-    if (!this.decisions.has(id)) {
-      return undefined;
-    }
-    const updatedDecision: AHPDecision = { ...decision, id };
-    this.decisions.set(id, updatedDecision);
-    return updatedDecision;
+    // Check if the decision exists
+    const existing = await this.getDecision(id);
+    if (!existing) return undefined;
+
+    // Prepare the update data
+    const updateData = {
+      name: decision.name,
+      criteriaJson: JSON.stringify(decision.criteria),
+      alternativesJson: JSON.stringify(decision.alternatives),
+      criteriaComparisonsJson: JSON.stringify(decision.criteriaComparisons),
+      alternativeComparisonsJson: JSON.stringify(decision.alternativeComparisons),
+      overallRankingJson: decision.overallRanking ? JSON.stringify(decision.overallRanking) : null
+    };
+
+    const [updated] = await db
+      .update(decisions)
+      .set(updateData)
+      .where(eq(decisions.id, id))
+      .returning();
+
+    if (!updated) return undefined;
+
+    // Return the full AHPDecision object
+    return {
+      ...updated,
+      criteria: decision.criteria,
+      alternatives: decision.alternatives,
+      criteriaComparisons: decision.criteriaComparisons,
+      alternativeComparisons: decision.alternativeComparisons,
+      overallRanking: decision.overallRanking,
+      createdAt: updated.createdAt.toISOString()
+    };
   }
 
   async deleteDecision(id: number): Promise<boolean> {
-    return this.decisions.delete(id);
+    const result = await db
+      .delete(decisions)
+      .where(eq(decisions.id, id))
+      .returning({ id: decisions.id });
+    
+    return result.length > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
