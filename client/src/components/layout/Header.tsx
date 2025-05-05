@@ -39,7 +39,7 @@ export default function Header() {
           <Link href="/">
             <div className="flex items-center space-x-2 cursor-pointer">
               <div className="flex flex-col items-center">
-                <span className="text-xl font-bold">AHP</span>
+                <span className="text-xl font-bold">DECISION</span>
                 <span className="text-xs font-medium -mt-1">UDESC-ESAG</span>
               </div>
             </div>
