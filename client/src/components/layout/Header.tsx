@@ -40,7 +40,7 @@ export default function Header() {
             <div className="flex items-center space-x-2 cursor-pointer">
               <div className="flex flex-col items-center">
                 <span className="text-xl font-bold">DECISION</span>
-                <span className="text-xs font-medium -mt-1">UDESC-ESAG</span>
+                <span className="text-xs font-medium -mt-1">UDESC</span>
               </div>
             </div>
           </Link>
