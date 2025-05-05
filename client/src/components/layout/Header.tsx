@@ -35,7 +35,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pl-3">
           <Link href="/">
             <div className="flex items-center space-x-2 cursor-pointer">
               <div className="flex flex-col items-center">
@@ -73,7 +73,7 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <FeedbackButton />
-            
+
             {user ? (
               <div className="flex items-center gap-2">
                 {user && (
@@ -83,7 +83,7 @@ export default function Header() {
                     </div>
                   </Link>
                 )}
-                
+
                 {isAdmin && (
                   <Link href="/dashboard">
                     <div className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 cursor-pointer ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
@@ -92,7 +92,7 @@ export default function Header() {
                     </div>
                   </Link>
                 )}
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function Header() {
                     Sobre
                   </div>
                 </Link>
-                
+
                 {user ? (
                   <>
                     <Link href="/my-decisions">
@@ -174,7 +174,7 @@ export default function Header() {
                         Minhas Decisões
                       </div>
                     </Link>
-                    
+
                     {isAdmin && (
                       <Link href="/dashboard">
                         <div className={`px-3 py-2 text-sm font-medium rounded-md flex items-center gap-1 cursor-pointer ${location === "/dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-primary/5"}`}>
@@ -183,7 +183,7 @@ export default function Header() {
                         </div>
                       </Link>
                     )}
-                    
+
                     <Button variant="ghost" className="justify-start px-3" onClick={handleLogout}>
                       <LogOut className="h-4 w-4 mr-2" />
                       <span>Sair</span>
